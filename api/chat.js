@@ -1,26 +1,17 @@
 // api/chat.js — Vercel serverless function
-// Proxies requests to Anthropic, keeping your API key secret
-// and enforcing a per-session message limit.
 
-const MESSAGE_LIMIT = 20; // free messages per session
+const MESSAGE_LIMIT = 20;
 
-export default async function handler(req, res) {
-  // CORS — allow requests from your own Vercel domain
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { messages, system, sessionCount } = req.body;
 
-  // Enforce usage limit
   if (sessionCount > MESSAGE_LIMIT) {
     return res.status(429).json({
       error: 'limit_reached',
@@ -65,4 +56,4 @@ export default async function handler(req, res) {
     console.error('Proxy error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
