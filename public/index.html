@@ -1355,16 +1355,21 @@ async function callClaude() {
       updateUsageBar();
       const replyText = data.content[0].text;
       conversationHistory.push({ role: 'assistant', content: replyText });
-      const formattedHtml = formatResponse(replyText);
-      appendMessage('bot', formattedHtml, true);
+      try {
+        const formattedHtml = formatResponse(replyText);
+        appendMessage('bot', formattedHtml, true);
+      } catch (renderErr) {
+        console.error('Render error:', renderErr);
+        appendMessage('bot', replyText, false);
+      }
     } else {
       appendMessage('bot', 'Sorry, I encountered an error. Please try again.', false);
       console.error(data);
     }
   } catch (err) {
     removeTyping();
-    appendMessage('bot', 'Connection error. Please check your network and try again.', false);
-    console.error(err);
+    console.error('Full error:', err);
+    appendMessage('bot', 'Error: ' + err.message, false);
   }
 
   isLoading = false;
