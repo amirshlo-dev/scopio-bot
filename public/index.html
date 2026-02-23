@@ -1309,9 +1309,12 @@ let sessionCount = 0;
 function updateUsageBar() {
   const pct = Math.min((sessionCount / MESSAGE_LIMIT) * 100, 100);
   const fill = document.getElementById('usage-fill');
-  document.getElementById('usage-label').textContent = `${sessionCount} / ${MESSAGE_LIMIT} messages used`;
-  fill.style.width = pct + '%';
-  fill.className = 'usage-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
+  const label = document.getElementById('usage-label');
+  if (label) label.textContent = `${sessionCount} / ${MESSAGE_LIMIT} messages used`;
+  if (fill) {
+    fill.style.width = pct + '%';
+    fill.className = 'usage-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
+  }
 }
 
 async function callClaude() {
