@@ -806,180 +806,242 @@
 
 <script>
 const GUIDE_KNOWLEDGE = `
-SCOPIO TROUBLESHOOTING GUIDE - REV D KNOWLEDGE BASE
+SCOPIO LABS — UNIFIED KNOWLEDGE BASE
+Documents: Troubleshooting Decision Tables Rev D | Release Notes v3.4.1 (DMS-53264/53266) | Tech Bulletin v3.4.2 (DMS-56482) | Deployment Best Practices (DMS-56762) | Deployment Work Instruction v3.4.x (DMS-51304)
 
-=== SUPPORT TIERS ===
-- Tier 1: Call Support Center — first point of contact, initial troubleshooting, basic steps, RPort application access, full Service tab including calibrations.
-- Tier 2: Field System Engineer (FSE) — on-site, advanced diagnostics, hardware replacement, calibration, RPort access, full Service tab.
-- Tier 3: Scopio Technical Support — remote in-depth diagnostics, calibration, advanced troubleshooting, RPort + operating system access.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SUPPORT TIERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Tier 1: Call Support Center — first contact, basic troubleshooting, RPort app access, full Service tab including calibrations.
+- Tier 2: Field System Engineer (FSE) — on-site, advanced diagnostics, hardware replacement, calibration.
+- Tier 3: Scopio Technical Support — remote in-depth diagnostics, OS access, calibration, advanced troubleshooting. Also the correct contact for deployment storage issues and wire conversion failures.
 - Tier 4: Scopio Professional Support — highest expertise, complex system-level issues, guides other tiers.
-- Clinical Support: Clinical Application Specialist — clinical workflows, user training, application-level troubleshooting.
+- Clinical Support: Clinical Application Specialist — clinical workflows, user training, application-level issues.
 
-=== HOW TO USE THIS GUIDE ===
-Step 1: Identify the issue by observing the system and matching it to descriptions.
-Step 2: Consult the "Clues" column to understand potential causes. Prioritize easiest fixes first.
-Step 3: Follow the "Resolutions" column step by step.
-Step 4: If unresolved, follow the "Escalation Instructions" to contact the appropriate support tier.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SOFTWARE VERSIONS — WHAT'S FIXED AND WHEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+v3.4.1 (Released Q3 2025, Effective Sep 30 2025):
+- PBS: Faster scan and analysis times for RBC-enabled application
+- BMA + PBS: Bug fix — clearer buffering/loading indication in reports
+- Risk: Low. No impact on device safety or quality.
+- Action: Inform Service Personnel and Application Specialists. No training required.
+- Ref: DMS-53264 (BMA), DMS-53266 (PBS)
 
-=== SCAN QUALITY ISSUES ===
+v3.4.2 (Effective January 1, 2026):
+- X100HT wire/slide lock improvements: Software updates to wire movement reduce wire issues and false readings. IMPORTANT: "Wire Conversion" recipe (Slides Wire Calibration Conversion) must be run immediately after deployment.
+- Active alignment: Additional retries reduce slides held in mechanism or not well positioned on fork — directly addresses HW.LOADER.PUT_SLIDE errors and slide position issues.
+- IR slide detection: Reduction of false fork readings (eliminates unnecessary troubleshooting) and improved cassette detection — directly addresses HW.LOADER.IR errors and cassette detection issues.
+- Image distortion test: Bug fix + automatic retries — reduces Amber Activation failures, especially on X100HT.
+- Ref: DMS-56482, DMS-56762, DMS-51304
+
+CROSS-REFERENCE — IF YOU HAVE THESE ERRORS, CHECK YOUR SOFTWARE VERSION:
+- Slide fall / slide not on fork errors → v3.4.2 active alignment improvement directly addresses this
+- IR no blobs / cassette not detected → v3.4.2 IR detection improvement directly addresses this
+- Wire servo stuck / HW.LOADER.UNLOCK_DOORS.SERVO_OPEN → v3.4.2 wire conversion required after upgrade
+- Image distortion failing in Amber Activation → v3.4.2 bug fix + retries address this
+- Report buffering indicator missing → v3.4.1 bug fix addresses this
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOW TO USE THIS GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Step 1: Identify issue by observing system and matching to descriptions below.
+Step 2: Check software version — some issues are fixed in v3.4.1 or v3.4.2 and may just require an update.
+Step 3: Follow Resolutions step by step.
+Step 4: If unresolved, follow Escalation Instructions for the appropriate tier.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCAN QUALITY ISSUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1.1 DARK LINE ACROSS SCAN
-- Clue: Coverslip has shifted across the slide during scanning
-- Resolution: 1) Remove coverslip and clean slide from oil. 2) Reapply oil and coverslip before rescanning.
-- Escalation: If recurs on X100HT, contact Tier 3 to investigate coverslip applicator. For X100, contact Clinical Application Specialist.
+- Clue: Coverslip shifted during scanning
+- Resolution: 1) Remove coverslip, clean slide of oil. 2) Reapply oil and coverslip, rescan.
+- Escalation: X100HT recurring → Tier 3 (investigate coverslip applicator). X100 recurring → Clinical Application Specialist.
 - Service By: Tier 1
 
 1.2 BUBBLES/CIRCLES ON SCAN
-- Normal threshold: Not more than 10% of slides; max 5% monolayer, 20% feathered edge.
-- Clue: Air bubbles under the coverslip
-- Resolution: 1) Contact Tier 3 to identify before next steps. 2) Remove coverslip and clean slide. 3) Reapply oil and new coverslip and rescan.
-- Escalation: If recurs on X100HT, treat as Repeated Pattern. For X100, contact Clinical Application Support.
+- Normal threshold: ≤10% of slides; max 5% monolayer, 20% feathered edge.
+- Clue: Air bubbles under coverslip
+- Resolution: 1) Contact Tier 3 to identify before next steps. 2) Remove coverslip, clean slide. 3) Reapply oil and new coverslip, rescan.
+- Escalation: Recurring on X100HT → treat as Repeated Pattern. X100 recurring → Clinical Application Support.
 - Service By: Tier 1, Tier 3 Remotely
 
 1.3 RAINBOW BACKGROUND ON SCAN
-- Clue: Too much oil on the slide
-- Resolution: 1) Remove coverslip and clean slide. 2) Reapply oil and rescan. For X100, verify correct oil amount.
-- Escalation: If recurs, identify as Repeated Pattern.
+- Clue: Too much oil on slide
+- Resolution: 1) Remove coverslip, clean slide. 2) Reapply oil, rescan. X100: verify correct oil amount.
+- Escalation: Recurring → treat as Repeated Pattern.
 - Service By: Tier 1
 
-1.4 REPEATED PATTERN
+1.4 REPEATED PATTERN (dirty lens)
 - Clue: Lens is dirty
-- Resolution: 1) Ensure scanner is clean. 2) Run Dirt Detection on the Lens remotely. 3) If lens is dirty, guide user to clean per user manual. 4) Rerun Dirt Detection. 5) If still dirty, repeat cleaning (max 3 attempts). 6) If clean but issue persists, perform objective lens part replacement remotely (checks white balance, burnt LEDs). 7) Contact Tier 3 to confirm if lens replacement needed, dispatch Tier 2 if required.
-- Escalation: If recurs and lens is clean, Tier 3 investigates oil applicator, coverslip applicator.
+- Resolution: 1) Ensure scanner is clean. 2) Run Dirt Detection on Lens remotely. 3) If dirty, guide user to clean per user manual. 4) Rerun Dirt Detection. 5) If still dirty, repeat (max 3 attempts). 6) If clean but issue persists, perform objective lens part replacement remotely. 7) Contact Tier 3 to confirm if lens replacement needed; dispatch Tier 2 if required.
+- NOTE: Lens cleanliness is also critical before Amber Activation during software deployment (see Deployment section).
+- Escalation: Recurring with clean lens → Tier 3 investigates oil/coverslip applicator.
 - Service By: Tier 1, Tier 3 Remotely
 
 1.5 BLURRY SCAN (OUT OF FOCUS)
 - Clues and Resolutions:
-  a) Insufficient oil: Rescan slide. If persists on X100HT, check oil container level, check for air bubbles in oil tubes, power cycle scanner.
-  b) Slide is upside down: Check preview image for upside down slides, instruct user on proper placement.
-  c) Slide scanned without coverslip or double coverslip: Clean coverslip cartridge area, check coverslip count, replace coverslips.
-  d) Lens is dirty: Follow Repeated Pattern steps.
-  e) Vibrate environment: Ensure scanner on sturdy platform. Run Vibration Verification. If fails, reboot and retry. If confirmed, Tier 3 + Tier 4 perform Vibration Calibration.
-  f) Scanner is not clean: Verify clean of oil, glass, debris on hexagon and tray.
-  g) Slide not well placed: Tier 3 reviews slide placement via preview camera. For X100HT, check fork, tray knives, run fork part replacement procedure.
+  a) Insufficient oil: Rescan. If persists on X100HT → check oil container level, check air bubbles in tubes, power cycle scanner.
+  b) Slide upside down: Check preview image, instruct user on correct placement.
+  c) No coverslip or double coverslip: Clean coverslip cartridge area, check coverslip count, replace coverslips.
+  d) Lens dirty: Follow Repeated Pattern steps. Note: Lens cleanliness verification is also part of pre-deployment checklist for v3.4.x.
+  e) Vibrating environment: Ensure scanner on sturdy platform. Run Vibration Verification. If fails, reboot and retry. If confirmed → Tier 3 + Tier 4 perform Vibration Calibration.
+  f) Scanner not clean: Verify clean of oil, glass, debris on hexagon and tray.
+  g) Slide not well placed: Tier 3 reviews via preview camera. X100HT: check fork, tray knives, run fork part replacement procedure.
   h) Hexagon burnt LEDs: Inspect remotely for burnt LEDs. Contact Tier 4 for replacements.
 - Service By: Tier 1, Tier 2, Tier 3 Remotely
 
 1.6 UNDESIRABLE SCAN/CELL COLORS
 - Clues:
-  a) User preference: Check image preset sliders are at default. Instruct user to adjust or consult Clinical Application Specialist.
-  b) Slide staining/smear quality: Rescan, ensure good smear quality with feathered edge, verify stain quality.
-  c) Scanner white balance out of calibration: Follow Repeated Pattern steps.
+  a) User preference: Check image preset sliders at default. Adjust or consult Clinical Application Specialist.
+  b) Slide staining/smear quality: Rescan, verify smear quality and feathered edge.
+  c) White balance out of calibration: Follow Repeated Pattern steps.
 - Service By: Tier 1, Clinical Application Specialist
 
 1.7 CELLS OVERLAPPING
-- Clue: Vibrate environment — Follow Vibrate Environment steps from Blurry Scan section.
+- Clue: Vibrating environment — follow Vibrate Environment steps from Blurry Scan section.
 - Service By: Tier 1, Tier 3 Remotely
 
-=== CAN'T START SCAN (SCAN BUTTON DISABLED) ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CAN'T START SCAN (SCAN BUTTON DISABLED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 First check: No tooltip? Common causes: tray not inserted (X100), insufficient consumables (X100HT), no slides.
-- Clue: Storage is full — Follow Storage is Full resolution steps.
+- Clue: Storage is full → follow Storage is Full steps.
 - Service By: Tier 1
 
-=== SCAN FAILURES AND MISBEHAVIOR ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCAN FAILURES AND MISBEHAVIOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 First: Try to re-scan. Check logs: grep "UUID" /srv/logs/flow_worker.log | grep "ERROR"
 
-- Clue: Scan Mode - Large Scan Areas (Edge to Edge, BMA, >10 slides in batch): 1) Single slide failure - rescan, try smaller area (Rapid monolayer). 2) Consecutive failures - reduce batch size. Service By: Tier 1
-- Clue: Storage is Full: 1) Check storage status in web app, keep below 80%. 2) Run "df -h" to verify /mnt/hd1 and /mnt/device. 3) Reboot PU. 4) Wait 30 min for deletion policy. 5) Identify full disk (HDD, NVME, SSD); if SSD full, clear calibration data. Escalation: If persists, contact Tier 3. Service By: Tier 1
-- Clue: System was not rebooted after calibration: Reboot PU, wait, rescan. Service By: Tier 1
-- Clue: Main Camera Failures During Scans: 1) Check lsusb for "Basler AG ace" on Bus 004. 2) Check logs for camera failures. 3) Handle as Main Camera Disconnection. Service By: Tier 1, Tier 2, Tier 3 Remotely
-- Clue: Preview Camera Failures During Scans: Check logs for preview camera failures, handle as Preview Camera Disconnection. Service By: Tier 3 Remotely
-- Clue: Burnt LEDs: Follow Hexagon Burnt LEDs resolution. Service By: Tier 3 Remotely
-- Clue: Finger sensor: X100HT - check logs for finger sensor events, contact Tier 4. X100 - check for false alarms, check light interference, replace UI panel if needed. Service By: Tier 3, Tier 4 Remotely
-- Clue: Network disconnections: Work with IT team, configure static IP. Service By: Tier 3, Tier 4 Remotely
-- Clue: System overheated: Check GPU with nvidia-smi, check PU environment for obstructions, clean fans if dusty. Service By: Tier 1, Tier 2, Tier 3 Remotely
+- Large Scan Areas (Edge to Edge, BMA, >10 slides in batch): Single failure → rescan, try smaller area. Consecutive failures → reduce batch size. Service By: Tier 1
+- Storage is Full: 1) Check storage in web app, keep below 80%. 2) Run "df -h" to verify /mnt/hd1 and /mnt/device. 3) Reboot PU. 4) Wait 30 min for deletion policy. 5) Identify full disk; if SSD full, clear calibration data. NOTE: v3.4.2 known issue — X100HT /srv may fill and block scans; if alert not auto-cleared within 1 hour, restart application. Escalation: Persists → Tier 3. Service By: Tier 1
+- System not rebooted after calibration: Reboot PU, wait, rescan. Service By: Tier 1
+- Main Camera Failures: Check lsusb for "Basler AG ace" on Bus 004, check logs, handle as Main Camera Disconnection. Service By: Tier 1, Tier 2, Tier 3 Remotely
+- Preview Camera Failures: Check logs, handle as Preview Camera Disconnection. Service By: Tier 3 Remotely
+- Burnt LEDs: Follow Hexagon Burnt LEDs resolution. Service By: Tier 3 Remotely
+- Finger sensor: X100HT → check logs for finger sensor events, contact Tier 4. X100 → check for false alarms, light interference, replace UI panel if needed. Service By: Tier 3, Tier 4 Remotely
+- Network disconnections: Work with IT team, configure static IP. Service By: Tier 3, Tier 4 Remotely
+- System overheated: Check GPU with nvidia-smi, check PU environment for obstructions, clean fans if dusty. Service By: Tier 1, Tier 2, Tier 3 Remotely
 
-=== MAIN CAMERA GENERAL ERRORS ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MAIN CAMERA GENERAL ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Error codes: HW.MAIN_CAMERA.DISCONNECTED, HW.MAIN_CAMERA.EXCLUSIVE_BUS_ERROR, HW.MAIN_CAMERA.PCI_EXPRESS_ERROR, HW.MAIN_CAMERA.WRONG_USB_TYPE
 
-Resolution: 1) Check lsusb for "Basler AG ace" on Bus 004. Check blue main camera cable connection to PU. 2) Check cable connections at back of PU. 3) Inspect cables and ports for damage. 4) Check LEDs on main camera - if off, skip to Step 5 with Tier 3. 5) Replug all cables, restart application. 6) Check logs for errors with Tier 3, escalate to Tier 4. 7) Replace parts in order:
-  For X100: 1) Switch to second USB port 2) Replace USB cable 3) Replace trigger cable 4) Replace USB extension card 5) Replace main camera
-  For X100HT: 1) Switch SFP to second NIC port 2) Replace SFP modules 3) Replace optical cable 4) Replace power/trigger cable 5) Replace NIC card 6) Replace main camera
-Escalation: If LEDs off, skip to Step 5 with Tier 3. If all parts replaced and issue persists, contact Tier 4.
+Resolution: 1) Check lsusb for "Basler AG ace" on Bus 004. Check blue main camera cable to PU. 2) Check cable connections at back of PU. 3) Inspect cables/ports for damage. 4) Check LEDs on main camera — if off, skip to Step 5 with Tier 3. 5) Replug all cables, restart application. 6) Check logs with Tier 3, escalate to Tier 4. 7) Replace parts in order:
+  X100: 1) Switch to second USB port 2) Replace USB cable 3) Replace trigger cable 4) Replace USB extension card 5) Replace main camera
+  X100HT: 1) Switch SFP to second NIC port 2) Replace SFP modules 3) Replace optical cable 4) Replace power/trigger cable 5) Replace NIC card 6) Replace main camera
+Escalation: If LEDs off, skip to Step 5 with Tier 3. All parts replaced and issue persists → Tier 4.
 Service By: Tier 1, Tier 2, Tier 3 Remotely
 
-=== PREVIEW CAMERA GENERAL ERRORS ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PREVIEW CAMERA GENERAL ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Error codes: HW.PREVIEW_CAMERA_LOW_RES.DISCONNECTED, HW.PREVIEW_CAMERA_HIGH_RES.DISCONNECTED
 
-Resolution: 1) Restart device and application server, ensure cables connected, restart application server from Application UI (try 2-3 times). 2) Replug USB communication cable, restart application. 3) Replug preview camera cable from preview camera side, run preview camera part replacement procedure without replacing part. 4) Analyze preview images for color/focus issues (corrupted backlight ND filter, malfunctioning backlight, reflections). 5) Replace in order: 1) USB Cable 2) Preview Camera
-Escalation: If persists after step 1, proceed with Tier 2. If persists after step 3, Tier 3. If after step 4, Tier 4.
+Resolution: 1) Restart device and application server, ensure cables connected, restart application server from UI (try 2-3 times). 2) Replug USB communication cable, restart application. 3) Replug preview camera cable from camera side, run preview camera part replacement without replacing. 4) Analyze preview images for color/focus issues. 5) Replace in order: 1) USB Cable 2) Preview Camera
+Escalation: Persists after step 1 → Tier 2. After step 3 → Tier 3. After step 4 → Tier 4.
 Service By: Tier 1, Tier 2, Tier 3, Tier 4 Remotely
 
-=== USB CONNECTION ERRORS ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+USB CONNECTION ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Error codes: HW.GENERAL.DEVICE_NOT_CONNECTED, HW.FUTURE.DISCONNECTED, HW.MACHINE_SYSTEM.TURNED_OFF, HW.MAIN_BOARD.DISCONNECTED, HW.MICRO_CHIP.DISCONNECTED
 
-Resolution: 1) Check device connections and power, verify LED on power supply, for X100HT verify side panels and thumb screws. 2) Reboot PU. 3) Check lsusb for "Future Technology Devices International" on Bus 001. 4) Verify SD-card mounting via lsblk. 5) Stop application, clear errors from Redis, restart application.
-Escalation: If persists, contact Tier 4.
+Resolution: 1) Check device connections and power, verify LED on power supply; X100HT verify side panels and thumb screws. 2) Reboot PU. 3) Check lsusb for "Future Technology Devices International" on Bus 001. 4) Verify SD-card mounting via lsblk. 5) Stop application, clear Redis errors, restart application.
+Escalation: Persists → Tier 4.
 Service By: Tier 1, Tier 2, Tier 3 Remotely
 
-=== PREVIEW CAMERA SPECIFIC ISSUES ===
-7.1 Bad Preview Color (Green/Magenta): If sudden onset, treat as Preview Camera General Error.
-7.2 Preview Image Out of Focus: If sudden onset, treat as Preview Camera General Error.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PREVIEW CAMERA SPECIFIC ISSUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7.1 Bad Preview Color (Green/Magenta): Sudden onset → treat as Preview Camera General Error.
+7.2 Preview Image Out of Focus: Sudden onset → treat as Preview Camera General Error.
 7.3 X100 False Slide Detection:
-  - Clue: Backlight filter dirty or damaged: Clean backlight. If can't clean, send Tier 2 with replacement. If malfunctioning, send Tier 2. Escalation: Contact Tier 4 if persists. Service By: Tier 1, Tier 3 Remotely
-  - Clue: Preview camera out of focus: Follow Preview Camera General Errors.
-  - Clue: Preview camera out of calibration: Run preview camera part replacement procedure WITHOUT replacing part. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
+  - Backlight filter dirty/damaged: Clean backlight. Can't clean → Tier 2 with replacement. Malfunctioning → Tier 2. Escalation: Contact Tier 4 if persists. Service By: Tier 1, Tier 3 Remotely
+  - Preview camera out of focus: Follow Preview Camera General Errors.
+  - Preview camera out of calibration: Run preview camera part replacement WITHOUT replacing part. Escalation: Tier 4. Service By: Tier 3 Remotely
 
-=== SCAN TIME IS EXTREMELY LONG ===
-- Clue: Storage is full: Follow Storage is Full steps. Service By: Tier 1
-- Clue: FOVs without data: Identify as Wrong Scan Area issue. Service By: Tier 1, Tier 3 Remotely
-- Clue: FOVs focus retries: Review Debug FOV data for excessive focus retries. If detected, treat as blurry scan issue. Service By: Tier 3 Remotely
-- Clue: Main camera failures: Check logs, handle as Main Camera Disconnection. Service By: Tier 3 Remotely
-- Clue: USB disconnection: Check logs, handle as USB Connection errors. Service By: Tier 3 Remotely
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCAN TIME IS EXTREMELY LONG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Storage is full: Follow Storage is Full steps. Service By: Tier 1
+- FOVs without data: Identify as Wrong Scan Area issue. Service By: Tier 1, Tier 3 Remotely
+- FOVs focus retries: Review Debug FOV data; if detected, treat as blurry scan. Service By: Tier 3 Remotely
+- Main camera failures: Check logs, handle as Main Camera Disconnection. Service By: Tier 3 Remotely
+- USB disconnection: Check logs, handle as USB Connection errors. Service By: Tier 3 Remotely
 
-=== PROCESSING UNIT GENERAL ERRORS ===
-- HW.RAM.LOWER_TOTAL_PHYSICAL_MEMORY: Check GPU with nvidia-smi, engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
-- NETWORK_ERROR: Check Network section in Service tab, engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
-- HW.MACHINE_SYSTEM.PCI_EXPRESS_IS_MISSING: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
-- HW.MACHINE_SYSTEM.UNRECOGNIZED_DEVICE: Unplug unauthorized USB cables. Only allow: Scanner USB cable, main camera cable. Escalation: Contact Tier 4. Service By: Tier 1, Tier 3 Remotely
-- HW.MOUNT.ARCHIVE_NOT_MOUNTED: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
-- HW.MOUNT.DEVICE_NOT_MOUNTED: 1) Ensure scanner is on. 2) Check scanner USB cable. Schedule Tier 2 with SD card spare part if persists. 3) On-site: replug or replace SD card. Service By: Tier 1, Tier 2, Tier 3 Remotely
-- HW.GPU.MISSING_GPU: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROCESSING UNIT GENERAL ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- HW.RAM.LOWER_TOTAL_PHYSICAL_MEMORY: Check GPU with nvidia-smi. Engage Tier 3 + Tier 4. Service By: Tier 3, Tier 4 Remotely
+- NETWORK_ERROR: Check Network section in Service tab. Engage Tier 3 + Tier 4. Service By: Tier 3, Tier 4 Remotely
+- HW.MACHINE_SYSTEM.PCI_EXPRESS_IS_MISSING: Engage Tier 3 + Tier 4. Service By: Tier 3, Tier 4 Remotely
+- HW.MACHINE_SYSTEM.UNRECOGNIZED_DEVICE: Unplug unauthorized USB cables. Only allow: Scanner USB cable, main camera cable. Escalation: Tier 4. Service By: Tier 1, Tier 3 Remotely
+- HW.MOUNT.ARCHIVE_NOT_MOUNTED: Engage Tier 3 + Tier 4. Service By: Tier 3, Tier 4 Remotely
+- HW.MOUNT.DEVICE_NOT_MOUNTED: 1) Ensure scanner is on, check USB cable. Schedule Tier 2 with SD card spare if persists. 2) On-site: replug or replace SD card. Service By: Tier 1, Tier 2, Tier 3 Remotely
+- HW.GPU.MISSING_GPU: Engage Tier 3 + Tier 4. Service By: Tier 3, Tier 4 Remotely
 
-=== SCANNER MECHANICS GENERAL ERRORS ===
-- HW.MACHINE_SYSTEM.MOTORS_LOCK: 1) Check Calibration History for Un-Packaging recipe. 2) Execute Un-Packaging recipe and reboot. 3) Clear errors from Redis, restart. Escalation: Contact Tier 4. Service By: Tier 1, Tier 3 Remotely
-- BLOCKING_ERROR: 1) Follow error handling steps in application UI. 2) Identify root cause from previous errors. Contact Tier 3 for help. Service By: Tier 1, Tier 3 Remotely
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCANNER MECHANICS GENERAL ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- HW.MACHINE_SYSTEM.MOTORS_LOCK: 1) Check Calibration History for Un-Packaging recipe. 2) Execute Un-Packaging recipe and reboot. 3) Clear Redis errors, restart. Escalation: Tier 4. Service By: Tier 1, Tier 3 Remotely
+- BLOCKING_ERROR: 1) Follow error handling in application UI. 2) Identify root cause from previous errors. Contact Tier 3. Service By: Tier 1, Tier 3 Remotely
 
-=== X100HT LOADER MECHANICS ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+X100HT LOADER MECHANICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-GENERAL ERRORS:
-- HW.LOADER.IR.NO_BLOBS_RETURNED: 1) Clean scanner, check reflectors. 2) Power cycle X100HT up to 3 times. 3) Restart scanner and application, clear Redis errors. 4) Run IR Camera Calibration. 5) Check IR LEDs, replace if needed. 6) Contact Tier 4, replace IR camera board. Service By: Tier 1, Tier 3 Remotely
-- HW.LOADER.PUT_SLIDE.CANT_FIX_TRAY_POSITION: 1) Ensure clean (check for broken glass, intact reflectors, remove slides). 2) Use Error Handling Wizard, run Fork and Tray Interaction from Calibration Parameters. 3) Tier 3 checks preview offset images, consult Tier 4. Service By: Tier 1, Tier 3, Tier 4 Remotely
+GENERAL LOADER ERRORS:
+- HW.LOADER.IR.NO_BLOBS_RETURNED: 1) Clean scanner, check reflectors. 2) Power cycle X100HT up to 3 times. 3) Restart scanner and application, clear Redis errors. 4) Run IR Camera Calibration. 5) Check IR LEDs, replace if needed. 6) Contact Tier 4, replace IR camera board.
+  VERSION NOTE: v3.4.2 includes IR slide detection improvements that reduce false readings on fork and improve cassette detection — if running older software, this upgrade may resolve recurring IR issues. Service By: Tier 1, Tier 3 Remotely
+
+- HW.LOADER.PUT_SLIDE.CANT_FIX_TRAY_POSITION: 1) Ensure clean (broken glass, intact reflectors, remove slides). 2) Use Error Handling Wizard, run Fork and Tray Interaction from Calibration Parameters. 3) Tier 3 checks preview offset images, consult Tier 4.
+  VERSION NOTE: v3.4.2 "Can't fix tray position" is a known issue post-reboot — perform "Reboot Processing Unit" via application UI. Also, v3.4.2 active alignment improvements reduce recurrence. Service By: Tier 1, Tier 3, Tier 4 Remotely
+
 - HW.LOADER.PUT_SLIDE.CANT_EXIT_TRAY_POSITION: 1) Clean (broken glass, reflectors, remove slides). 2) Tier 3 checks preview offset images, consult Tier 4. Service By: Tier 1, Tier 3, Tier 4 Remotely
 
 SLIDE ON FORK ALARM:
 - HW.LOADER.CHECKSUM_BLOCKED_SLIDE_NOT_ON_FORK: 1) Follow error handling in UI. 2) Verify all reflectors present and fork aligned, run Fork Alignment calibration. If misaligned, dispatch Tier 2 for fork replacement. 3) Run fork part replacement without replacing fork, contact Tier 4 if issues. Service By: Tier 1, Tier 3 Remotely
 - HW.LOADER.CHECKSUM_BLOCKED_SLIDE_ON_FORK: Follow HW.LOADER.CHECKSUM_BLOCKED_SLIDE_NOT_ON_FORK steps.
-- HW.LOADER.SLIDE_ON_FORK_OUT_OF_POSITION, HW.LOADER.TAKE_RETURN_SLIDE.CANT_FIX_SLIDE_POSITION, HW.LOADER.TAKE_RETURN_SLIDE.FAILED_FIX_SLIDE_POSITION: 1) Follow UI error handling. 2) Remove slide if present. 3) Handle error changes. 4) Inspect and clean (fork alignment, reflectors). 5) Resolve manually, restart servers, reset loader state, clear Redis. 6) Verify by reproducing issue. Service By: Tier 1, Tier 3, Tier 4 Remotely
+- HW.LOADER.SLIDE_ON_FORK_OUT_OF_POSITION, HW.LOADER.TAKE_RETURN_SLIDE.CANT_FIX_SLIDE_POSITION, HW.LOADER.TAKE_RETURN_SLIDE.FAILED_FIX_SLIDE_POSITION: 1) Follow UI error handling. 2) Remove slide if present. 3) Handle error changes. 4) Inspect and clean (fork alignment, reflectors). 5) Resolve manually, restart servers, reset loader state, clear Redis. 6) Verify by reproducing issue.
+  VERSION NOTE: v3.4.2 active alignment improvements specifically target slides not well positioned on fork — if recurring, consider software upgrade. Service By: Tier 1, Tier 3, Tier 4 Remotely
 
 SLIDE FALL ALARM:
-- HW.LOADER.RETURN_SLIDE.PRE_RETURN_SLIDE_NOT_ON_FORK: 1) Investigate error behavior, contact Tier 3 for real error code. 2) Manually resolve, clean loader state, clear Redis and restart. Escalation: Contact Tier 4 before dispatching. Service By: Tier 1, Tier 3 Remotely
-- Multiple slide falls (HW.LOADER.PUT_SLIDE.POST_PUT_SLIDE_NOT_ON_FORK): Investigate causes (incorrect placement, oily knives, objective lens). Tier 3 reviews images. Service By: Tier 1, Tier 3 Remotely
+- HW.LOADER.RETURN_SLIDE.PRE_RETURN_SLIDE_NOT_ON_FORK: 1) Investigate error behavior, contact Tier 3 for real error code. 2) Manually resolve, clean loader state, clear Redis and restart. Escalation: Contact Tier 4 before dispatching.
+  VERSION NOTE: v3.4.2 active alignment retries directly address slide fall issues — consider upgrading if recurring. Service By: Tier 1, Tier 3 Remotely
+- Multiple slide falls (HW.LOADER.PUT_SLIDE.POST_PUT_SLIDE_NOT_ON_FORK): Investigate causes (incorrect placement, oily knives, objective lens). Tier 3 reviews images.
+  VERSION NOTE: v3.4.2 reduces this class of issue. Service By: Tier 1, Tier 3 Remotely
+
+WIRE / SERVO ISSUES:
+- HW.LOADER.UNLOCK_DOORS.SERVO_OPEN: 1) Follow error handling in UI with Tier 3 remotely. 2) Run Wire Alignment Part Replacement without replacing (skip Main Camera EVT, stop after Slides Wire Assembly step). 3) Run Slides Wire Calibration test. Escalation: Contact Tier 4 before sending Tier 3 on-site.
+  VERSION NOTE: v3.4.2 wire closed loop improvements are specifically designed to reduce wire issues and false readings. After upgrading to 3.4.2, the "Slides Wire Calibration Conversion" recipe MUST be run — see Deployment section. Service By: Tier 1, Tier 3 Remotely
 
 COVERSLIP MISALIGNED/DROPPED:
 - HW.LOADER.COVERSLIP.COVERSLIP_NOT_TAKEN_AFTER_HOME: 1) Clean coverslip area, replace coverslip, store in dry area. If persists, send Tier 2 with vacuum/tube parts. Check active alignment (servo). 2) Tier 2 on-site: validate root cause. 3) Perform Vacuum Part Replacement, Needle Assembly Part Replacement. Escalation: Contact Tier 4 before main loader board replacement. Service By: Tier 1, Tier 2, Tier 3 Remotely
 - HW.LOADER.COVERSLIP.NO_OIL_DROPPED: Contact Tier 3 and Tier 4 for deeper investigation. Service By: Tier 1, Tier 3 Remotely
 
 COVERSLIP CASSETTE MISSING OR EMPTY:
-- HW.LOADER.COVERSLIP.COVERSLIP_CASSETTE_IS_MISSING: 1) Verify scanner and cartridge maintenance (clean, no obstructions on rail, full cassette, wait 10 sec). 2) Replace coverslip cartridge. 3) Run IR LEDs Part Replacement recipe without replacing, stop after Cassettes Burned IR LEDs step. 4) Proceed to IR Cameras Rail step. 5) If persists, Tier 3 visits site with spare parts. Service By: Tier 1, Tier 3 On-Site, Tier 4 Remotely
-- HW.LOADER.COVERSLIP.INSUFFICIENT_COVERSLIPS: 1) Verify maintenance. 2) Run Coverslip Applicator Part Replacement recipe without replacing, stop after Coverslip Pump Calibration. Service By: Tier 1
+- HW.LOADER.COVERSLIP.COVERSLIP_CASSETTE_IS_MISSING: 1) Verify scanner and cartridge maintenance (clean, no obstructions on rail, full cassette, wait 10 sec). 2) Replace coverslip cartridge. 3) Run IR LEDs Part Replacement without replacing, stop after Cassettes Burned IR LEDs step. 4) Proceed to IR Cameras Rail step. 5) If persists, Tier 3 visits with spare parts.
+  VERSION NOTE: v3.4.2 IR detection improvements reduce false cassette-missing readings. Service By: Tier 1, Tier 3 On-Site, Tier 4 Remotely
+- HW.LOADER.COVERSLIP.INSUFFICIENT_COVERSLIPS: 1) Verify maintenance. 2) Run Coverslip Applicator Part Replacement without replacing, stop after Coverslip Pump Calibration. Service By: Tier 1
 
 COVERSLIP BROKEN:
-- HW.LOADER.COVERSLIP.UNDEFINED_AIR_PRESSURE: 1) Follow error handling UI. 2) Ensure proper scanner and cartridge maintenance. 3) Run Coverslip Applicator Part Replacement without replacing, stop after Pump Calibration. Escalation: Contact Tier 3 and Tier 4. Service By: Tier 1
+- HW.LOADER.COVERSLIP.UNDEFINED_AIR_PRESSURE: 1) Follow error handling UI. 2) Ensure proper scanner and cartridge maintenance. 3) Run Coverslip Applicator Part Replacement without replacing, stop after Pump Calibration. Escalation: Tier 3 and Tier 4. Service By: Tier 1
 - HW.LOADER.COVERSLIP.COVERSLIP_NOT_TAKEN: Follow HW.LOADER.COVERSLIP.UNDEFINED_AIR_PRESSURE steps.
 
 INSUFFICIENT OIL:
-- HW.LOADER.COVERSLIP.INSUFFICIENT_OIL: 1) Follow error handling UI. 2) Check oil container is full, oil door closed, wait 10 sec. 3) Open door, lift oil container 2cm, replace, close, wait 10 sec. 4) Power cycle device. Escalation: If persists, Tier 3 visits with Tier 4 remotely. Service By: Tier 1
-
-SERVO IS STUCK:
-- HW.LOADER.UNLOCK_DOORS.SERVO_OPEN: 1) Follow error handling UI with Tier 3 remotely. 2) Run Wire Alignment Part Replacement without replacing (skip Main Camera EVT, stop after Slides Wire Assembly step). 3) Run Slides Wire Calibration test. Escalation: Contact Tier 4 before sending Tier 3 on site. Service By: Tier 1, Tier 3 Remotely
+- HW.LOADER.COVERSLIP.INSUFFICIENT_OIL: 1) Follow error handling UI. 2) Check oil container is full, oil door closed, wait 10 sec. 3) Open door, lift oil container 2cm, replace, close, wait 10 sec. 4) Power cycle device. Escalation: Persists → Tier 3 on-site + Tier 4 remotely. Service By: Tier 1
 
 OIL DOOR OPEN:
 - HW.LOADER.COVERSLIP.OIL_DOOR_OPEN: 1) Inspect oil door magnet and placement (not upside down). 2) Follow application UI steps. 3) On-site: verify all cables, hall effect sensor functioning. Service By: Tier 1, Tier 3 On-Site
 
 X100HT CASSETTE NOT DETECTED:
 - Specific cassette not detected: 1) Check cassette pin. 2) Reinsert cassette. 3) Switch to different cassette.
-- All cassettes not detected in same slot: 1) Run IR LEDs Part Replacement recipe without replacing. 2) Proceed to IR Cameras Rail step. 3) If persists, Tier 3 visits with IR board, IR camera board. Service By: Tier 1, Tier 3 Remotely, Tier 4 Remotely
+- All cassettes not detected in same slot: 1) Run IR LEDs Part Replacement without replacing. 2) Proceed to IR Cameras Rail step. 3) If persists, Tier 3 visits with IR board.
+  VERSION NOTE: v3.4.2 improves slide detection in cassettes — recurring cassette detection issues may be resolved by upgrading. Service By: Tier 1, Tier 3 Remotely, Tier 4 Remotely
 
 SLIDES NOT DETECTED AFTER CASSETTE INSERTION:
 - Door is open: Open and close door securely. Service By: Tier 1
@@ -987,112 +1049,219 @@ SLIDES NOT DETECTED AFTER CASSETTE INSERTION:
 - Unsupported slide types: Verify slides have opaque edge, no stickers extending beyond bounds. Service By: Tier 1
 
 LOADER OTHER ERRORS:
-- HW.LOADER.INIT.SLIDE_ON_FORK: Follow BLOCKING_ERROR steps.
-- HW.LOADER.HOME_ALL.SLIDE_ON_FORK: Follow BLOCKING_ERROR steps.
-- HW.LOADER.RETURN_SLIDE.PRE_RETURN_SLIDE_IN_SLOT: Follow UI error handling steps, contact Tier 3. Escalation: Contact Tier 4. Service By: Tier 1, Tier 3 Remotely
+- HW.LOADER.INIT.SLIDE_ON_FORK / HW.LOADER.HOME_ALL.SLIDE_ON_FORK: Follow BLOCKING_ERROR steps.
+- HW.LOADER.RETURN_SLIDE.PRE_RETURN_SLIDE_IN_SLOT: Follow UI error handling, contact Tier 3. Escalation: Tier 4. Service By: Tier 1, Tier 3 Remotely
 - HW.LOADER.FORK.FAILED_CALIBRATING_REFLECTORS: 1) Verify fork alignment and reflectors, run Fork Alignment calibration. 2) Run Fork Part Replacement without replacing fork, run Fork Reflectors Calibration. Service By: Tier 1, Tier 3, Tier 4 Remotely
-- HW.LOADER.LOCK_DOORS.FRONT_DOOR_OPEN: Close door and retry. If persists, call Tier 4. Service By: Tier 1
+- HW.LOADER.LOCK_DOORS.FRONT_DOOR_OPEN: Close door and retry. Persists → Tier 4. Service By: Tier 1
 - HW.LOADER.TAKE_SLIDE.FAILED_TAKE_SLIDE: Verify user trained to clean cassette (IFU). No double slides, no slides stuck to ceiling of slot. Service By: Tier 1, Tier 3 Remotely
-- HW.LOADER.UNLOCK_DOORS.SLIDE_ON_FORK: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
-- HW.LOADER.UNLOCK_DOORS.LOADER_NOT_HOME: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+- HW.LOADER.UNLOCK_DOORS.SLIDE_ON_FORK / HW.LOADER.UNLOCK_DOORS.LOADER_NOT_HOME: Engage Tier 3 + Tier 4. Service By: Tier 3, Tier 4 Remotely
 - X Motor not moving: 1) Reseat tray board connections. 2) Reseat flex flat cable. 3) Reseat main board connections. 4) Engage Tier 3. Service By: Tier 3, Tier 4 Remotely
 
-=== PROCESSING UNIT OFFLINE IN RPORT ===
-- PU powered off: Power on, wait 10 min. If stays off, engage Tier 3. Tier 3 works with Tier 4. Service By: Tier 1
-- Failure in OS startup (Uboot): Connect screen to VGA port. If welcome screen appears, no Rport connection → next clue. If no screen, check for terminal prompt, power cycle 2-3 times. Check motherboard code display. Escalation: Schedule Tier 3 with PU parts. Service By: Tier 1, Tier 3, Tier 4 Remotely
-- Connection Blocked: Verify all Scopio mandatory URLs accessible on port 443. Escalation: Contact Tier 4. Service By: Tier 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROCESSING UNIT OFFLINE IN RPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- PU powered off: Power on, wait 10 min. Stays off → Tier 3 + Tier 4. Service By: Tier 1
+- OS startup failure (Uboot): Connect screen to VGA port. Welcome screen but no RPort → check next clue. No screen → check terminal prompt, power cycle 2-3 times, check motherboard code. Schedule Tier 3 with PU parts. Service By: Tier 1, Tier 3, Tier 4 Remotely
+- Connection Blocked: Verify all Scopio mandatory URLs accessible on port 443. Escalation: Tier 4. Service By: Tier 1
+- Lost connectivity after reboot (known issue v3.4.x): Wait 1-2 additional minutes — system will come back online automatically. This is a known issue in v3.4.x; no action required beyond waiting.
 
-=== APPLICATION NOT REACHABLE ===
-- Bad Gateway: 1) Wait 5 min (may be restarting). 2) Verify SSD connection: lsblk -f, check /mnt/hd1 mount, LABEL, FSTAB, UUID. 3) Contact Tier 3 to verify application running on PU, reboot PU and wait 10 min. Escalation: Contact Tier 4. Service By: Tier 1, Tier 3 Remotely
-- PU powered off: Power on, wait 10 min. If stays off, engage Tier 3. Service By: Tier 1
-- Network cable connection: 1) Verify cable in correct ETH port, check LEDs blinking. 2) If not blinking: replace cable or try different outlet. 3) If blinking but no connectivity: restart PU, wait 10 min. Service By: Tier 1
-- Network connectivity: 1) Confirm with IT team PU properly configured in network. 2) Ping test between workstation and PU. 3) Verify IP with "ifconfig eno1". 4) Check "cat /etc/netplan/01-networkmanager". Escalation: Contact Tier 3. Service By: Tier 1, Tier 2
-- Browser security warning: Renew certificate via service app's dedicated action (requires internet to *.scopiolabs.com). Service By: Tier 1
-- Version recently deployed / Error 500/502/504: Power on PU, wait 10 min. If stays off, engage Tier 3. Service By: Tier 1
-- System recently rebooted while scanner powered off: Ensure scanner switched on, restart PU. Escalation: Contact Tier 3. Service By: Tier 1
-- Network settings: Run "ifconfig eno1" to verify IP, check "cat /etc/netplan/01-networkmanager". Service By: Tier 1
-- Connection blocked: Verify all Scopio mandatory URLs accessible on port 443. Escalation: Contact Tier 4. Service By: Tier 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPLICATION NOT REACHABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Bad Gateway: 1) Wait 5 min (may be restarting). 2) Verify SSD: lsblk -f, check /mnt/hd1 mount. 3) Contact Tier 3, reboot PU, wait 10 min. Escalation: Tier 4. Service By: Tier 1, Tier 3 Remotely
+- PU powered off: Power on, wait 10 min. Stays off → Tier 3. Service By: Tier 1
+- Network cable: 1) Verify cable in correct ETH port, LEDs blinking. 2) Not blinking → replace cable or try different outlet. 3) Blinking but no connectivity → restart PU, wait 10 min. Service By: Tier 1
+- Network connectivity: 1) Confirm with IT team PU configured in network. 2) Ping test between workstation and PU. 3) Verify IP with "ifconfig eno1". 4) Check "cat /etc/netplan/01-networkmanager". Escalation: Tier 3. Service By: Tier 1, Tier 2
+- Browser security warning: Renew certificate via service app (requires internet to *.scopiolabs.com). Service By: Tier 1
+- Error 500/502/504 or recently deployed: Power on PU, wait 10 min. Stays off → Tier 3. Service By: Tier 1
+- Scanner powered off at reboot: Ensure scanner switched on, restart PU. Escalation: Tier 3. Service By: Tier 1
+- Connection blocked: Verify all Scopio mandatory URLs on port 443. Escalation: Tier 4. Service By: Tier 1
 
-=== APPLICATION GENERAL ERRORS ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPLICATION GENERAL ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - SCANNER.FLOW.INIT.STATE_LOST: 1) Press "Verify" button if available, wait 10 sec. 2) Access support panel to resolve. Service By: Tier 1, Tier 3 Remotely
-- SCANNER.FLOW.UNEXPECTED_CRASH: Reboot PU and wait 10 min. Escalation: Contact Tier 4. Service By: Tier 1
-- SYSTEM.SERVICE_UNHEALTHY, SYSTEM.SERVICE_IS_DOWN: 1) Use support panel to identify which services are down. 2) Check logs for related errors. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
+- SCANNER.FLOW.UNEXPECTED_CRASH: Reboot PU, wait 10 min. Escalation: Tier 4. Service By: Tier 1
+- SYSTEM.SERVICE_UNHEALTHY / SYSTEM.SERVICE_IS_DOWN: 1) Use support panel to identify which services are down. 2) Check logs for related errors. Escalation: Tier 4. Service By: Tier 3 Remotely
 
-=== SOFTWARE UPDATE FAILURES ===
-- Wrong version deployment error: Verify software version exists, check for typos. Escalation: Contact Tier 4. Service By: Tier 1
-- System clock not synced: Run "timedatectl", run "systemctl status chronyd", run "chronyc tracking" to check reference ID. If zero, not active → escalate to Tier 3. Refer to WI [DMS-26523]. Service By: Tier 1, Tier 2, Tier 3 Remotely
-- Slow network speed: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
-
-=== APPLICATION NOT REACHABLE AFTER DEPLOYMENT ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SOFTWARE UPDATE AND DEPLOYMENT ISSUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Wrong version deployment error: Verify software version exists, check for typos. Escalation: Tier 4. Service By: Tier 1
+- System clock not synced: Run "timedatectl", "systemctl status chronyd", "chronyc tracking". If reference ID zero → not active → Tier 3. Refer to DMS-26523. Service By: Tier 1, Tier 2, Tier 3 Remotely
+- Slow network speed: Engage Tier 3 + Tier 4. Service By: Tier 3, Tier 4 Remotely
 - Password updated after deployment: Distributor passwords may change between versions. Contact Tier 3 for updated password list. Service By: Tier 1
-- Error 500/502/504: Power on PU, wait 10 min. If stays off, engage Tier 3. Service By: Tier 1
 
-=== BARCODE ERRORS ===
-- SCANNER.BARCODE.LICENSE_ISSUE: Execute activation script via RPort per instructions in [DMS-31864]. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
-- Barcode cut off: 1) Check barcode calibration under scan setup settings (X100). Recalibrate if needed with Tier 3. 2) Verify preview camera calibrated, run preview camera calibration without replacing. Service By: Tier 1, Tier 3 Remotely
-- Preview camera out of focus: Follow Preview Image Out of Focus resolution. Service By: Tier 1, Tier 3 Remotely
+DEPLOYMENT TROUBLESHOOTING (from DMS-51304 / DMS-56762):
+- Storage over 60% before deployment (v3.0.1): Contact support.hem@scopiolabs.com — do NOT proceed. Tier 3.
+- X100HT /srv over 20%: Restart application or PU, check after 15 min. No change → Tier 3.
+- Deployment script freezes: Do NOT re-execute. Check RPort Jobs tab or contact Scopio support.
+- Wire conversion fails after 5 retries: Manual calibration required → Tier 3.
+- Image distortion failure in Amber Activation:
+  * Check lens is clean (most common cause)
+  * Check slide is free of oil residue and correctly positioned
+  * X100: slide in correct slot, oriented correctly, cover slipped
+  * X100HT: slide in Slot 10, blank in Slot 9, cassette in Position 3; slide must have opaque edge with barcode; not double-coverslipped
+  * v3.4.2 includes an automatic retry fix for this — upgrading may reduce failures
+- Amber Activation → Push to Calibration Store fails (no network/AWS blocked): Select "Skip & Finish" — this completes the calibration and generates the report.
+- Case migration MAINTENANCE.CASE_MIGRATION_IN_PROGRESS: Do NOT proceed to calibrations. Monitor by refreshing [tunnel-url]/scanner/system/health until error disappears.
+
+SOFTWARE DEPLOYMENT PROCEDURE SUMMARY (v3.4.x, via DMS-51304):
+Pre-deployment checklist (ALL must be confirmed):
+  1. System idle — no errors, at least 10 min after last scan
+  2. X100HT /srv storage under 20%
+  3. Scans storage under 60% (when upgrading from 3.0.1)
+  4. Lens clean (for Amber Activation) — run Dirt on Lens test if no recent scans
+  5. Network Mode disabled (Settings > IT Configuration > remove all networked systems)
+  6. 3 empty cassettes loaded, door closed (required for v3.4.2 wire conversion)
+
+Version compatibility:
+  - Below 2.1.7: Not supported — contact Scopio
+  - 2.1.7: First upgrade to 3.1.0-SP4, complete migration, then upgrade to 3.4.x
+  - 3.0.1 or higher: Direct upgrade supported
+
+Deployment steps (at maintenance.scopiolabs.com):
+  1. Search for Processing Unit by name
+  2. Scripts tab > Load > "scopio software update (v3.4.x)"
+  3. Type version (e.g. "3.4.2-GA") in script window
+  4. Execute — do NOT execute more than once
+  5. Monitor Online status (red during reboot, green when complete)
+  6. Wait for case migration to complete if upgrading from 3.0.1 (check /scanner/system/health)
+
+Post-deployment calibrations (v3.4.2):
+  X100HT only — Wire Conversion (immediately after deployment):
+    - Location: Service > Calibrations > Slides Wire Calibration Conversion
+    - Requires: 3 empty cassettes, door closed, no slides on tray or fork
+    - If fails: retry up to 5 times; still fails → Tier 3
+
+  X100 + X100HT — Amber Activation (if not previously calibrated on 3.4.0-GA or later):
+    - X100: 1 blank slide (Slot 3) + 1 PBS oiled+coverslipped (Slot 2) | ~40 min
+    - X100HT: 1 blank slide (Slot 9) + PBS slide in Slot 10, cassette in Position 3 | ~75 min
+    - After calibration: Reboot PU, verify Hexagon Model, verify Scan Setup colors
+
+Final verification: Scan 3 slides, get customer approval before returning system to operation.
+
+Deployment time estimates:
+  - Deploy 3.4.x: ~1.5 hr (up to 7 hr on slow networks)
+  - Case migration (from 3.0.1): ~2 hr (up to 4-5 hr with many cases)
+  - Wire Conversion (X100HT only): ~15 min
+  - Amber Activation: ~1 hr
+  - Total typical: ~5.5 hrs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPLICATION NOT REACHABLE AFTER DEPLOYMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Password updated after deployment: Contact Tier 3 for updated password list. Service By: Tier 1
+- Error 500/502/504: Power on PU, wait 10 min. Stays off → Tier 3. Service By: Tier 1
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BARCODE ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- SCANNER.BARCODE.LICENSE_ISSUE: Execute activation script via RPort per DMS-31864. Escalation: Tier 4. Service By: Tier 3 Remotely
+- Barcode cut off: 1) Check barcode calibration in scan setup (X100). Recalibrate with Tier 3. 2) Verify preview camera calibrated, run preview camera calibration without replacing. Service By: Tier 1, Tier 3 Remotely
+- Preview camera out of focus: Follow Preview Image Out of Focus. Service By: Tier 1, Tier 3 Remotely
 - Preview image is dark: Follow Backlight filter dirty or damaged resolution. Service By: Tier 1, Tier 3 Remotely
 
-=== NETWORK MODE - NOT ALL SYSTEMS DISPLAYED ===
-- Not all systems on same version: Check About screen for version consistency. Deploy latest to all systems. Escalation: Contact Tier 3. Service By: Tier 1
-- Not all systems clocks synced: Run "timedatectl", "systemctl status chronyd", "chronyc tracking". If Chrony not active → Tier 3. Refer to WI [DMS-26523]. Escalation: Contact Tier 4. Service By: Tier 1, Tier 2, Tier 3 Remotely
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NETWORK MODE — NOT ALL SYSTEMS DISPLAYED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Not all systems on same version: Check About screen for version consistency. Deploy latest to all systems. Note: Network Mode must be disabled before deploying (see Deployment section). Escalation: Tier 3. Service By: Tier 1
+- Not all systems clocks synced: Run "timedatectl", "systemctl status chronyd", "chronyc tracking". Chrony not active → Tier 3. Refer to DMS-26523. Escalation: Tier 4. Service By: Tier 1, Tier 2, Tier 3 Remotely
 
-=== LIS ISSUES ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LIS ISSUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - LIS Disconnected:
-  a) LIS Service not functioning: Reboot PU and wait 10 min. Escalation: Contact Tier 4. Service By: Tier 1
-  b) Wrong LIS settings: Ensure LIS connection settings are accurate and up to date. Escalation: Contact Tier 4. Service By: Tier 1
+  a) LIS Service not functioning: Reboot PU, wait 10 min. Escalation: Tier 4. Service By: Tier 1
+  b) Wrong LIS settings: Ensure LIS connection settings accurate and up to date. Escalation: Tier 4. Service By: Tier 1
 - Repeated LIS Messages:
-  a) Hospital's LIS not receiving messages: Check outbound LIS status "connected". If not, follow LIS Disconnected steps. Service By: Tier 1
+  a) Hospital LIS not receiving: Check outbound LIS status "connected". If not → follow LIS Disconnected steps. Service By: Tier 1
   b) Timeout interval too short: Adjust timeout interval in LIS Settings to longer duration. Service By: Tier 1
   c) Delayed resend period too short: Adjust delayed resend period in LIS Settings. Service By: Tier 1
-- Outbound data not received in LIS:
-  a) LIS settings: Check outbound LIS status, follow LIS Disconnected if not connected. Service By: Tier 1
+- Outbound data not received:
+  a) LIS settings: Check outbound LIS status. Service By: Tier 1
   b) Large file size: Adjust timeout interval to longer duration. Service By: Tier 1
-  c) Improper data format: Check LIS integration → Outbound tab → Reports Parameters settings. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
+  c) Improper data format: Check LIS integration > Outbound > Reports Parameters. Escalation: Tier 4. Service By: Tier 3 Remotely
 
-=== APPLICATION SLOWNESS ===
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPLICATION SLOWNESS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Before engaging Tier 3, collect:
 - Replace/disconnect network cable from PU to reset network interface.
 - Run network speed tests on affected workstations.
-- For Network Mode: Check IP configurations in IT Configuration tab, run speed tests between configured machines.
+- Network Mode: Check IP configurations in IT Configuration tab, run speed tests between configured machines.
 
-=== EMPTY CASE GALLERY / ERRORS FETCHING CASES ===
-- Other networked devices unreachable: Fix connection of other devices, re-test via IT Configuration tab. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
-- Database migration: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3 Remotely
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EMPTY CASE GALLERY / ERRORS FETCHING CASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Other networked devices unreachable: Fix connection of other devices, re-test via IT Configuration tab. Escalation: Tier 4. Service By: Tier 3 Remotely
+- Database migration: Engage Tier 3 + Tier 4. Service By: Tier 3 Remotely
 
-=== CLINICAL ISSUES ===
-Note: Refer to Application Specialist especially when no degradation and appears out-of-the-box. They determine if Technical Investigation is needed.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CLINICAL ISSUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Note: Refer to Application Specialist when no degradation and appears out-of-the-box. They determine if Technical Investigation is needed.
 
-- Incorrect PLT counts: If pink background, follow Repeated Pattern resolution steps.
-- Low WBC Count: May be due to clinical condition.
-  a) LCM turned off: Enable WBC Low Count Mode (LCM) in Scan Setup settings.
-  b) Current scan mode insufficient area: Adjust scan mode to increase scan area.
+- Incorrect PLT counts: Pink background → follow Repeated Pattern steps.
+- Low WBC Count: May be clinical condition.
+  a) LCM turned off: Enable WBC Low Count Mode in Scan Setup.
+  b) Current scan mode insufficient area: Adjust scan mode to increase area.
 - QC Failed:
   a) Image quality degradation: Follow Scan Quality steps.
-  b) Previous QC results degradation: Identify if scan quality related, follow Scan Quality steps. Escalation: Contact Tier 4.
-  c) Missed/mis-detections of WBC: Engage Tier 3, Tier 3 works with Tier 4.
+  b) Previous QC results degradation: Identify if scan quality related. Escalation: Tier 4.
+  c) Missed/mis-detections of WBC: Engage Tier 3 + Tier 4.
 - Wrong Scan Area:
-  a) Scan settings: (review settings)
+  a) Scan settings: Review settings.
   b) Slide preparation: Verify slide properly prepared per guidelines.
-  c) Preview image related issue: Follow Preview Camera section steps.
+  c) Preview image related: Follow Preview Camera section steps.
 - Wrong Analysis Area:
   a) Wrong Scan Area: Follow Wrong Scan Area steps.
-  b) In PBS+RBC, large analysis area due to slide preparation: May be shifted on specific slides. Escalation: Contact Tier 4.
+  b) PBS+RBC large analysis area due to slide preparation: May shift on specific slides. Escalation: Tier 4.
 
-=== APPENDIX - IMAGE SHARPNESS ASSESSMENT ===
-Steps to validate:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPENDIX — IMAGE SHARPNESS ASSESSMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 1. Enter three full-field scans, assess overall focus, choose one for detailed assessment.
 2. Click sun icon (upper right), set Image presets to 'Reset'.
 3. Navigate to 'WBC' tab.
 4. Check cells under section at 100X magnification.
 5. Grade each description (Faint/Moderate/Distinct/Absent) for at least 5 cells.
-   - Choose severe option if variability (e.g., 4 Distinct, 1 Moderate → mark Moderate).
+   - Choose severe option if variability (e.g. 4 Distinct, 1 Moderate → mark Moderate).
 Sections to evaluate: Segmented Neutrophil, Monocyte.
-Segmented Neutrophil criteria: white dots in nuclei visible, connecting lines between segments clear, distinct dark dots in cytoplasm, distinction between light cytoplasm and dark nuclei, clear cell membrane outline.
+Segmented Neutrophil criteria: white dots in nuclei visible, connecting lines between segments clear, distinct dark dots in cytoplasm, light cytoplasm/dark nuclei distinction, clear cell membrane outline.
 Monocyte criteria: clear vacuoles in cell membrane, nucleus folding visible, cytoplasm/nuclei distinction, cell membrane outline clarity.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLIDE PREPARATION FOR CALIBRATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(From DMS-51304 — relevant to any calibration work)
+- Slides must be oiled and cover slipped (X100: mandatory; X100HT: system applies during process)
+- Smear must cover ¾ of slide length with clearly defined feathered edge
+- Clean glass must exist beyond the feathered edge (no stain material)
+- Smear must NOT extend beyond end of slide (causes calibration failure)
+- Non-oiled slides: risk of AI detection issues and lens damage
+- Valid PBS slide may be used; suggested slide speeds up calibration
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KNOWN ISSUES IN v3.4.x (from DMS-51304 / DMS-56762)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Storage cleanup — further scans blocked:
+   X100HT /srv may fill and block scans. Auto-clears after cleanup. If not cleared within 1 hour → restart application.
+2. "Can't fix tray position" error after scan:
+   Perform "Reboot Processing Unit" via application UI. (Also tracked in HW.LOADER.PUT_SLIDE.CANT_FIX_TRAY_POSITION section above)
+3. Lost connectivity after reboot:
+   Wait 1-2 additional minutes — system will come back online automatically.
 `;
 
-const SYSTEM_PROMPT = `You are the Scopio Support Bot, an expert AI assistant for troubleshooting the Scopio digital pathology system (X100 and X100HT models). You have comprehensive knowledge of the Scopio Troubleshooting Decision Tables Rev D.
+const SYSTEM_PROMPT = `You are the Scopio Labs Support Bot, an expert AI assistant for troubleshooting and supporting the Scopio digital pathology system (X100 and X100HT models). Your knowledge base is a unified, cross-referenced document that combines: the Troubleshooting Decision Tables Rev D, Software Release Notes v3.4.1, Tech Bulletin v3.4.2, Software Deployment Best Practices, and the Deployment Work Instruction v3.4.x.
+
+When answering:
+- Always cross-reference between documents: if a recurring error is addressed in a newer software version, mention the version fix alongside the troubleshooting steps
+- For deployment questions, provide the full step-by-step procedure with all warnings and time estimates
+- For hardware errors on X100HT loader, note when v3.4.2 improvements are relevant (IR detection, wire/servo, active alignment)
+- Always state which Tier should handle each step
+- If an issue appears in multiple documents, synthesize all relevant information into a single clear answer
+- Cite document references (e.g. DMS-51304) when relevant so users know where to find detailed procedures
 
 Your knowledge base:
 ${GUIDE_KNOWLEDGE}
