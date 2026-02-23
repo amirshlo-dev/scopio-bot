@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scopio Labs | Support Bot</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --surface2: #eef0f8;
+    --border: #e1e3f0;
+    --border-strong: #c9cce0;
+    --accent: #6b2fff;
+    --accent-dark: #4d1fd4;
+    --accent-light: #ede8ff;
+    --accent2: #9b6dff;
+    --text: #141529;
+    --text-dim: #555878;
+    --text-muted: #9ea2bc;
+    --user-bubble: #6b2fff;
+    --bot-bubble: #ffffff;
+    --danger: #dc2626;
+    --warn: #d97706;
+    --tier1: #059669;
+    --tier2: #2563eb;
+    --tier3: #7c3aed;
+    --tier4: #dc2626;
+    --clinical: #b45309;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Subtle purple ambient */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; right: 0;
+    width: 40%; height: 40%;
+    background: radial-gradient(ellipse at top right, rgba(107,47,255,0.05) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Header */
+  header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(107,47,255,0.07);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+
+  .header-subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-top: 1px;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: rgba(107, 47, 255, 0.07);
+    border: 1px solid rgba(107, 47, 255, 0.2);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Main layout */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: inset -1px 0 0 var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-section {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .quick-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+
+  .quick-btn:hover {
+    background: var(--accent-light);
+    border-color: rgba(107,47,255,0.2);
+    color: var(--accent-dark);
+  }
+
+  .quick-btn .qicon {
+    display: inline-block;
+    margin-right: 7px;
+    font-size: 13px;
+  }
+
+  /* Tier legend */
+  .tier-legend {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .tier-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tier-item:last-child { border-bottom: none; }
+
+  .tier-badge {
+    width: 32px;
+    height: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .tier-badge.t1 { background: rgba(5,150,105,0.1); color: var(--tier1); border: 1px solid rgba(5,150,105,0.2); }
+  .tier-badge.t2 { background: rgba(37,99,235,0.1); color: var(--tier2); border: 1px solid rgba(37,99,235,0.2); }
+  .tier-badge.t3 { background: rgba(124,58,237,0.1); color: var(--tier3); border: 1px solid rgba(124,58,237,0.2); }
+  .tier-badge.t4 { background: rgba(220,38,38,0.1); color: var(--tier4); border: 1px solid rgba(220,38,38,0.2); }
+  .tier-badge.tc { background: rgba(180,83,9,0.1); color: var(--clinical); border: 1px solid rgba(180,83,9,0.2); }
+
+  .tier-desc {
+    font-size: 10.5px;
+    color: var(--text-dim);
+    line-height: 1.3;
+  }
+
+  /* Chat area */
+  .chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border-strong, #c9cce0); border-radius: 2px; }
+
+  /* Message bubbles */
+  .msg {
+    display: flex;
+    gap: 12px;
+    max-width: 820px;
+    animation: fadeUp 0.3s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .msg.bot .msg-avatar {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+  }
+
+  .msg.user .msg-avatar {
+    background: var(--surface2);
+    border: 1px solid var(--border-strong, #c9cce0);
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  .msg-content {
+    flex: 1;
+  }
+
+  .msg-sender {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+  }
+
+  .msg.user .msg-sender { text-align: right; }
+
+  .msg-bubble {
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.65;
+    position: relative;
+  }
+
+  .msg.bot .msg-bubble {
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+    border-radius: 4px 14px 14px 14px;
+    box-shadow: 0 1px 4px rgba(107,47,255,0.07);
+    color: var(--text);
+  }
+
+  .msg.user .msg-bubble {
+    background: var(--user-bubble);
+    border-radius: 14px 4px 14px 14px;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(107,47,255,0.3);
+  }
+
+  /* Rich content in bot messages */
+  .msg-bubble h3 {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.3px;
+    margin-bottom: 10px;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .msg-bubble h4 {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text);
+    margin: 12px 0 6px;
+  }
+
+  .msg-bubble p { margin-bottom: 8px; }
+  .msg-bubble p:last-child { margin-bottom: 0; }
+
+  .msg-bubble ul, .msg-bubble ol {
+    padding-left: 18px;
+    margin: 8px 0;
+  }
+
+  .msg-bubble li { margin-bottom: 4px; font-size: 13.5px; }
+
+  .msg-bubble .step-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: steps;
+  }
+
+  .msg-bubble .step-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  .msg-bubble .step-list li:last-child { border-bottom: none; }
+
+  .msg-bubble .step-list li::before {
+    content: counter(steps);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    border: 1.5px solid rgba(107,47,255,0.3);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Tier tag */
+  .tier-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    margin: 2px;
+  }
+  .tier-tag.t1 { background: rgba(5,150,105,0.1); color: var(--tier1); border: 1px solid rgba(5,150,105,0.25); }
+  .tier-tag.t2 { background: rgba(37,99,235,0.1); color: var(--tier2); border: 1px solid rgba(37,99,235,0.25); }
+  .tier-tag.t3 { background: rgba(124,58,237,0.1); color: var(--tier3); border: 1px solid rgba(124,58,237,0.25); }
+  .tier-tag.t4 { background: rgba(220,38,38,0.1); color: var(--tier4); border: 1px solid rgba(220,38,38,0.25); }
+  .tier-tag.tc { background: rgba(180,83,9,0.1); color: var(--clinical); border: 1px solid rgba(180,83,9,0.25); }
+
+  .escalation-box {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: rgba(220,38,38,0.05);
+    border: 1px solid rgba(220,38,38,0.2);
+    font-size: 12.5px;
+    color: #991b1b;
+  }
+
+  .escalation-box strong {
+    color: var(--danger);
+    display: block;
+    margin-bottom: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .info-box {
+    margin: 10px 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: rgba(107,47,255,0.05);
+    border: 1px solid rgba(107,47,255,0.15);
+    font-size: 12.5px;
+    color: var(--accent-dark);
+  }
+
+  .code-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 2px 7px;
+    background: rgba(107,47,255,0.08);
+    border: 1px solid rgba(107,47,255,0.2);
+    border-radius: 4px;
+    color: var(--accent-dark);
+  }
+
+  /* Loading indicator */
+  .typing-indicator {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 12px 18px;
+  }
+
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.6;
+    animation: typing 1.2s ease-in-out infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes typing {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  /* Input area */
+  .input-area {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 14px 24px;
+    flex-shrink: 0;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .input-wrapper {
+    flex: 1;
+    position: relative;
+  }
+
+  #user-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    min-height: 48px;
+    max-height: 120px;
+    line-height: 1.5;
+  }
+
+  #user-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(107,47,255,0.1);
+  }
+
+  #user-input::placeholder { color: var(--text-muted); }
+
+  .send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(107,47,255,0.35);
+  }
+
+  .send-btn:hover { background: var(--accent-dark); transform: scale(1.03); }
+  .send-btn:active { transform: scale(0.97); }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .send-btn svg { width: 18px; height: 18px; fill: #fff; }
+
+  .input-hint {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* Welcome screen */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 8px;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .welcome-icon {
+    width: 68px;
+    height: 68px;
+    background: var(--accent);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 12px;
+    box-shadow: 0 8px 24px rgba(107,47,255,0.25);
+  }
+
+  .welcome h2 {
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .welcome p {
+    color: var(--text-dim);
+    font-size: 14px;
+    max-width: 400px;
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+
+  .welcome-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+    max-width: 560px;
+  }
+
+  .welcome-chip {
+    padding: 7px 14px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .welcome-chip:hover {
+    background: var(--surface2);
+    border-color: rgba(0, 200, 160, 0.3);
+    color: var(--text);
+  }
+
+  /* Separator */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 10px 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .sidebar { display: none; }
+    .messages { padding: 16px; }
+  }
+
+  /* Usage counter */
+  .usage-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 7px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .usage-track {
+    flex: 1;
+    max-width: 180px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .usage-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .usage-fill.warn { background: var(--warn); }
+  .usage-fill.danger { background: var(--danger); }
+
+  .usage-label { font-family: 'DM Mono', monospace; font-size: 11px; }
+
+  .limit-banner {
+    display: none;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 16px;
+    text-align: center;
+    font-size: 13px;
+    color: #991b1b;
+  }
+
+  .limit-banner strong { display: block; margin-bottom: 4px; font-size: 14px; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-mark" style="display:flex;align-items:center;justify-content:center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="3.5" fill="white"/>
+          <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 17a7 7 0 110-14 7 7 0 010 14z" fill="white" opacity="0.5"/>
+          <path d="M12 5a7 7 0 100 14A7 7 0 0012 5zm0 11a4 4 0 110-8 4 4 0 010 8z" fill="white" opacity="0.25"/>
+        </svg>
+      </div>
+    <div>
+      <div class="header-title">Scopio Labs <span style="color:var(--accent);font-weight:800;">Support Bot</span></div>
+      <div class="header-subtitle" style="font-size:11px;color:var(--text-muted);margin-top:1px;">AI-Powered Troubleshooting Guide · Rev D</div>
+    </div>
+  </div>
+  <div class="status-pill">
+    <div class="status-dot"></div>
+    AI ONLINE
+  </div>
+</header>
+
+<div class="main">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Quick Topics</div>
+      <button class="quick-btn" onclick="quickAsk('scan quality issues')"><span class="qicon">🔬</span>Scan Quality</button>
+      <button class="quick-btn" onclick="quickAsk('scan button is disabled and cannot start scan')"><span class="qicon">⛔</span>Can't Start Scan</button>
+      <button class="quick-btn" onclick="quickAsk('scan failures and misbehavior')"><span class="qicon">⚠️</span>Scan Failures</button>
+      <button class="quick-btn" onclick="quickAsk('main camera error or disconnection')"><span class="qicon">📷</span>Main Camera Errors</button>
+      <button class="quick-btn" onclick="quickAsk('preview camera error or disconnection')"><span class="qicon">👁️</span>Preview Camera</button>
+      <button class="quick-btn" onclick="quickAsk('USB connection errors')"><span class="qicon">🔌</span>USB Errors</button>
+      <button class="quick-btn" onclick="quickAsk('scan time is extremely long or slow')"><span class="qicon">⏱️</span>Slow Scan Time</button>
+      <button class="quick-btn" onclick="quickAsk('processing unit general errors')"><span class="qicon">🖥️</span>Processing Unit</button>
+      <button class="quick-btn" onclick="quickAsk('X100HT loader mechanics errors')"><span class="qicon">⚙️</span>Loader Mechanics</button>
+      <button class="quick-btn" onclick="quickAsk('application not reachable or network issues')"><span class="qicon">🌐</span>Connectivity</button>
+      <button class="quick-btn" onclick="quickAsk('LIS disconnection or LIS issues')"><span class="qicon">🏥</span>LIS Issues</button>
+      <button class="quick-btn" onclick="quickAsk('clinical issues like wrong PLT counts or QC failed')"><span class="qicon">🧪</span>Clinical Issues</button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Support Tiers</div>
+    </div>
+    <div class="tier-legend">
+      <div class="tier-item">
+        <div class="tier-badge t1">T1</div>
+        <div class="tier-desc">Call Support Center — initial troubleshooting</div>
+      </div>
+      <div class="tier-item">
+        <div class="tier-badge t2">T2</div>
+        <div class="tier-desc">Field System Engineer — on-site, hardware</div>
+      </div>
+      <div class="tier-item">
+        <div class="tier-badge t3">T3</div>
+        <div class="tier-desc">Scopio Technical Support — advanced remote</div>
+      </div>
+      <div class="tier-item">
+        <div class="tier-badge t4">T4</div>
+        <div class="tier-desc">Scopio Professional Support — expert level</div>
+      </div>
+      <div class="tier-item">
+        <div class="tier-badge tc">CAS</div>
+        <div class="tier-desc">Clinical Application Specialist</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat area -->
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="limit-banner" id="limit-banner"><strong>🚫 Session limit reached</strong>You've used your 20 free messages. Refresh the page to start a new session.</div>
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="3.5" fill="white"/>
+            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 17a7 7 0 110-14 7 7 0 010 14z" fill="white" opacity="0.6"/>
+            <path d="M12 5a7 7 0 100 14A7 7 0 0012 5zm0 11a4 4 0 110-8 4 4 0 010 8z" fill="white" opacity="0.3"/>
+          </svg>
+        </div>
+        <h2>Scopio Labs <span style="color:var(--accent)">Support Bot</span></h2>
+        <p>Ask me about any issue with your Scopio system — I'll provide step-by-step resolutions and tell you which support tier to engage.</p>
+        <div class="welcome-chips">
+          <div class="welcome-chip" onclick="quickAsk('blurry scan out of focus')">Blurry scan</div>
+          <div class="welcome-chip" onclick="quickAsk('dark line across scan')">Dark line on scan</div>
+          <div class="welcome-chip" onclick="quickAsk('bubbles on scan')">Bubbles on scan</div>
+          <div class="welcome-chip" onclick="quickAsk('rainbow background on scan')">Rainbow background</div>
+          <div class="welcome-chip" onclick="quickAsk('coverslip misaligned or dropped')">Coverslip issue</div>
+          <div class="welcome-chip" onclick="quickAsk('insufficient oil error')">Insufficient oil</div>
+          <div class="welcome-chip" onclick="quickAsk('application not reachable bad gateway')">Bad gateway</div>
+          <div class="welcome-chip" onclick="quickAsk('barcode not detected or incorrect')">Barcode error</div>
+          <div class="welcome-chip" onclick="quickAsk('storage is full')">Storage full</div>
+          <div class="welcome-chip" onclick="quickAsk('cells overlapping on scan')">Cells overlapping</div>
+          <div class="welcome-chip" onclick="quickAsk('what support tiers are available')">Support tiers explained</div>
+          <div class="welcome-chip" onclick="quickAsk('how does the troubleshooting guide work')">How to use this guide</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <div class="input-wrapper">
+          <textarea
+            id="user-input"
+            placeholder="Describe your issue or enter an error code (e.g. HW.MAIN_CAMERA.DISCONNECTED)..."
+            rows="1"
+            onkeydown="handleKey(event)"
+            oninput="autoResize(this)"
+          ></textarea>
+        </div>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 21L23 12 2 3v7l15 2-15 2v7z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">Powered by Claude AI · Scopio Labs Troubleshooting Decision Tables Rev D</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GUIDE_KNOWLEDGE = `
+SCOPIO TROUBLESHOOTING GUIDE - REV D KNOWLEDGE BASE
+
+=== SUPPORT TIERS ===
+- Tier 1: Call Support Center — first point of contact, initial troubleshooting, basic steps, RPort application access, full Service tab including calibrations.
+- Tier 2: Field System Engineer (FSE) — on-site, advanced diagnostics, hardware replacement, calibration, RPort access, full Service tab.
+- Tier 3: Scopio Technical Support — remote in-depth diagnostics, calibration, advanced troubleshooting, RPort + operating system access.
+- Tier 4: Scopio Professional Support — highest expertise, complex system-level issues, guides other tiers.
+- Clinical Support: Clinical Application Specialist — clinical workflows, user training, application-level troubleshooting.
+
+=== HOW TO USE THIS GUIDE ===
+Step 1: Identify the issue by observing the system and matching it to descriptions.
+Step 2: Consult the "Clues" column to understand potential causes. Prioritize easiest fixes first.
+Step 3: Follow the "Resolutions" column step by step.
+Step 4: If unresolved, follow the "Escalation Instructions" to contact the appropriate support tier.
+
+=== SCAN QUALITY ISSUES ===
+
+1.1 DARK LINE ACROSS SCAN
+- Clue: Coverslip has shifted across the slide during scanning
+- Resolution: 1) Remove coverslip and clean slide from oil. 2) Reapply oil and coverslip before rescanning.
+- Escalation: If recurs on X100HT, contact Tier 3 to investigate coverslip applicator. For X100, contact Clinical Application Specialist.
+- Service By: Tier 1
+
+1.2 BUBBLES/CIRCLES ON SCAN
+- Normal threshold: Not more than 10% of slides; max 5% monolayer, 20% feathered edge.
+- Clue: Air bubbles under the coverslip
+- Resolution: 1) Contact Tier 3 to identify before next steps. 2) Remove coverslip and clean slide. 3) Reapply oil and new coverslip and rescan.
+- Escalation: If recurs on X100HT, treat as Repeated Pattern. For X100, contact Clinical Application Support.
+- Service By: Tier 1, Tier 3 Remotely
+
+1.3 RAINBOW BACKGROUND ON SCAN
+- Clue: Too much oil on the slide
+- Resolution: 1) Remove coverslip and clean slide. 2) Reapply oil and rescan. For X100, verify correct oil amount.
+- Escalation: If recurs, identify as Repeated Pattern.
+- Service By: Tier 1
+
+1.4 REPEATED PATTERN
+- Clue: Lens is dirty
+- Resolution: 1) Ensure scanner is clean. 2) Run Dirt Detection on the Lens remotely. 3) If lens is dirty, guide user to clean per user manual. 4) Rerun Dirt Detection. 5) If still dirty, repeat cleaning (max 3 attempts). 6) If clean but issue persists, perform objective lens part replacement remotely (checks white balance, burnt LEDs). 7) Contact Tier 3 to confirm if lens replacement needed, dispatch Tier 2 if required.
+- Escalation: If recurs and lens is clean, Tier 3 investigates oil applicator, coverslip applicator.
+- Service By: Tier 1, Tier 3 Remotely
+
+1.5 BLURRY SCAN (OUT OF FOCUS)
+- Clues and Resolutions:
+  a) Insufficient oil: Rescan slide. If persists on X100HT, check oil container level, check for air bubbles in oil tubes, power cycle scanner.
+  b) Slide is upside down: Check preview image for upside down slides, instruct user on proper placement.
+  c) Slide scanned without coverslip or double coverslip: Clean coverslip cartridge area, check coverslip count, replace coverslips.
+  d) Lens is dirty: Follow Repeated Pattern steps.
+  e) Vibrate environment: Ensure scanner on sturdy platform. Run Vibration Verification. If fails, reboot and retry. If confirmed, Tier 3 + Tier 4 perform Vibration Calibration.
+  f) Scanner is not clean: Verify clean of oil, glass, debris on hexagon and tray.
+  g) Slide not well placed: Tier 3 reviews slide placement via preview camera. For X100HT, check fork, tray knives, run fork part replacement procedure.
+  h) Hexagon burnt LEDs: Inspect remotely for burnt LEDs. Contact Tier 4 for replacements.
+- Service By: Tier 1, Tier 2, Tier 3 Remotely
+
+1.6 UNDESIRABLE SCAN/CELL COLORS
+- Clues:
+  a) User preference: Check image preset sliders are at default. Instruct user to adjust or consult Clinical Application Specialist.
+  b) Slide staining/smear quality: Rescan, ensure good smear quality with feathered edge, verify stain quality.
+  c) Scanner white balance out of calibration: Follow Repeated Pattern steps.
+- Service By: Tier 1, Clinical Application Specialist
+
+1.7 CELLS OVERLAPPING
+- Clue: Vibrate environment — Follow Vibrate Environment steps from Blurry Scan section.
+- Service By: Tier 1, Tier 3 Remotely
+
+=== CAN'T START SCAN (SCAN BUTTON DISABLED) ===
+First check: No tooltip? Common causes: tray not inserted (X100), insufficient consumables (X100HT), no slides.
+- Clue: Storage is full — Follow Storage is Full resolution steps.
+- Service By: Tier 1
+
+=== SCAN FAILURES AND MISBEHAVIOR ===
+First: Try to re-scan. Check logs: grep "UUID" /srv/logs/flow_worker.log | grep "ERROR"
+
+- Clue: Scan Mode - Large Scan Areas (Edge to Edge, BMA, >10 slides in batch): 1) Single slide failure - rescan, try smaller area (Rapid monolayer). 2) Consecutive failures - reduce batch size. Service By: Tier 1
+- Clue: Storage is Full: 1) Check storage status in web app, keep below 80%. 2) Run "df -h" to verify /mnt/hd1 and /mnt/device. 3) Reboot PU. 4) Wait 30 min for deletion policy. 5) Identify full disk (HDD, NVME, SSD); if SSD full, clear calibration data. Escalation: If persists, contact Tier 3. Service By: Tier 1
+- Clue: System was not rebooted after calibration: Reboot PU, wait, rescan. Service By: Tier 1
+- Clue: Main Camera Failures During Scans: 1) Check lsusb for "Basler AG ace" on Bus 004. 2) Check logs for camera failures. 3) Handle as Main Camera Disconnection. Service By: Tier 1, Tier 2, Tier 3 Remotely
+- Clue: Preview Camera Failures During Scans: Check logs for preview camera failures, handle as Preview Camera Disconnection. Service By: Tier 3 Remotely
+- Clue: Burnt LEDs: Follow Hexagon Burnt LEDs resolution. Service By: Tier 3 Remotely
+- Clue: Finger sensor: X100HT - check logs for finger sensor events, contact Tier 4. X100 - check for false alarms, check light interference, replace UI panel if needed. Service By: Tier 3, Tier 4 Remotely
+- Clue: Network disconnections: Work with IT team, configure static IP. Service By: Tier 3, Tier 4 Remotely
+- Clue: System overheated: Check GPU with nvidia-smi, check PU environment for obstructions, clean fans if dusty. Service By: Tier 1, Tier 2, Tier 3 Remotely
+
+=== MAIN CAMERA GENERAL ERRORS ===
+Error codes: HW.MAIN_CAMERA.DISCONNECTED, HW.MAIN_CAMERA.EXCLUSIVE_BUS_ERROR, HW.MAIN_CAMERA.PCI_EXPRESS_ERROR, HW.MAIN_CAMERA.WRONG_USB_TYPE
+
+Resolution: 1) Check lsusb for "Basler AG ace" on Bus 004. Check blue main camera cable connection to PU. 2) Check cable connections at back of PU. 3) Inspect cables and ports for damage. 4) Check LEDs on main camera - if off, skip to Step 5 with Tier 3. 5) Replug all cables, restart application. 6) Check logs for errors with Tier 3, escalate to Tier 4. 7) Replace parts in order:
+  For X100: 1) Switch to second USB port 2) Replace USB cable 3) Replace trigger cable 4) Replace USB extension card 5) Replace main camera
+  For X100HT: 1) Switch SFP to second NIC port 2) Replace SFP modules 3) Replace optical cable 4) Replace power/trigger cable 5) Replace NIC card 6) Replace main camera
+Escalation: If LEDs off, skip to Step 5 with Tier 3. If all parts replaced and issue persists, contact Tier 4.
+Service By: Tier 1, Tier 2, Tier 3 Remotely
+
+=== PREVIEW CAMERA GENERAL ERRORS ===
+Error codes: HW.PREVIEW_CAMERA_LOW_RES.DISCONNECTED, HW.PREVIEW_CAMERA_HIGH_RES.DISCONNECTED
+
+Resolution: 1) Restart device and application server, ensure cables connected, restart application server from Application UI (try 2-3 times). 2) Replug USB communication cable, restart application. 3) Replug preview camera cable from preview camera side, run preview camera part replacement procedure without replacing part. 4) Analyze preview images for color/focus issues (corrupted backlight ND filter, malfunctioning backlight, reflections). 5) Replace in order: 1) USB Cable 2) Preview Camera
+Escalation: If persists after step 1, proceed with Tier 2. If persists after step 3, Tier 3. If after step 4, Tier 4.
+Service By: Tier 1, Tier 2, Tier 3, Tier 4 Remotely
+
+=== USB CONNECTION ERRORS ===
+Error codes: HW.GENERAL.DEVICE_NOT_CONNECTED, HW.FUTURE.DISCONNECTED, HW.MACHINE_SYSTEM.TURNED_OFF, HW.MAIN_BOARD.DISCONNECTED, HW.MICRO_CHIP.DISCONNECTED
+
+Resolution: 1) Check device connections and power, verify LED on power supply, for X100HT verify side panels and thumb screws. 2) Reboot PU. 3) Check lsusb for "Future Technology Devices International" on Bus 001. 4) Verify SD-card mounting via lsblk. 5) Stop application, clear errors from Redis, restart application.
+Escalation: If persists, contact Tier 4.
+Service By: Tier 1, Tier 2, Tier 3 Remotely
+
+=== PREVIEW CAMERA SPECIFIC ISSUES ===
+7.1 Bad Preview Color (Green/Magenta): If sudden onset, treat as Preview Camera General Error.
+7.2 Preview Image Out of Focus: If sudden onset, treat as Preview Camera General Error.
+7.3 X100 False Slide Detection:
+  - Clue: Backlight filter dirty or damaged: Clean backlight. If can't clean, send Tier 2 with replacement. If malfunctioning, send Tier 2. Escalation: Contact Tier 4 if persists. Service By: Tier 1, Tier 3 Remotely
+  - Clue: Preview camera out of focus: Follow Preview Camera General Errors.
+  - Clue: Preview camera out of calibration: Run preview camera part replacement procedure WITHOUT replacing part. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
+
+=== SCAN TIME IS EXTREMELY LONG ===
+- Clue: Storage is full: Follow Storage is Full steps. Service By: Tier 1
+- Clue: FOVs without data: Identify as Wrong Scan Area issue. Service By: Tier 1, Tier 3 Remotely
+- Clue: FOVs focus retries: Review Debug FOV data for excessive focus retries. If detected, treat as blurry scan issue. Service By: Tier 3 Remotely
+- Clue: Main camera failures: Check logs, handle as Main Camera Disconnection. Service By: Tier 3 Remotely
+- Clue: USB disconnection: Check logs, handle as USB Connection errors. Service By: Tier 3 Remotely
+
+=== PROCESSING UNIT GENERAL ERRORS ===
+- HW.RAM.LOWER_TOTAL_PHYSICAL_MEMORY: Check GPU with nvidia-smi, engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+- NETWORK_ERROR: Check Network section in Service tab, engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+- HW.MACHINE_SYSTEM.PCI_EXPRESS_IS_MISSING: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+- HW.MACHINE_SYSTEM.UNRECOGNIZED_DEVICE: Unplug unauthorized USB cables. Only allow: Scanner USB cable, main camera cable. Escalation: Contact Tier 4. Service By: Tier 1, Tier 3 Remotely
+- HW.MOUNT.ARCHIVE_NOT_MOUNTED: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+- HW.MOUNT.DEVICE_NOT_MOUNTED: 1) Ensure scanner is on. 2) Check scanner USB cable. Schedule Tier 2 with SD card spare part if persists. 3) On-site: replug or replace SD card. Service By: Tier 1, Tier 2, Tier 3 Remotely
+- HW.GPU.MISSING_GPU: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+
+=== SCANNER MECHANICS GENERAL ERRORS ===
+- HW.MACHINE_SYSTEM.MOTORS_LOCK: 1) Check Calibration History for Un-Packaging recipe. 2) Execute Un-Packaging recipe and reboot. 3) Clear errors from Redis, restart. Escalation: Contact Tier 4. Service By: Tier 1, Tier 3 Remotely
+- BLOCKING_ERROR: 1) Follow error handling steps in application UI. 2) Identify root cause from previous errors. Contact Tier 3 for help. Service By: Tier 1, Tier 3 Remotely
+
+=== X100HT LOADER MECHANICS ===
+
+GENERAL ERRORS:
+- HW.LOADER.IR.NO_BLOBS_RETURNED: 1) Clean scanner, check reflectors. 2) Power cycle X100HT up to 3 times. 3) Restart scanner and application, clear Redis errors. 4) Run IR Camera Calibration. 5) Check IR LEDs, replace if needed. 6) Contact Tier 4, replace IR camera board. Service By: Tier 1, Tier 3 Remotely
+- HW.LOADER.PUT_SLIDE.CANT_FIX_TRAY_POSITION: 1) Ensure clean (check for broken glass, intact reflectors, remove slides). 2) Use Error Handling Wizard, run Fork and Tray Interaction from Calibration Parameters. 3) Tier 3 checks preview offset images, consult Tier 4. Service By: Tier 1, Tier 3, Tier 4 Remotely
+- HW.LOADER.PUT_SLIDE.CANT_EXIT_TRAY_POSITION: 1) Clean (broken glass, reflectors, remove slides). 2) Tier 3 checks preview offset images, consult Tier 4. Service By: Tier 1, Tier 3, Tier 4 Remotely
+
+SLIDE ON FORK ALARM:
+- HW.LOADER.CHECKSUM_BLOCKED_SLIDE_NOT_ON_FORK: 1) Follow error handling in UI. 2) Verify all reflectors present and fork aligned, run Fork Alignment calibration. If misaligned, dispatch Tier 2 for fork replacement. 3) Run fork part replacement without replacing fork, contact Tier 4 if issues. Service By: Tier 1, Tier 3 Remotely
+- HW.LOADER.CHECKSUM_BLOCKED_SLIDE_ON_FORK: Follow HW.LOADER.CHECKSUM_BLOCKED_SLIDE_NOT_ON_FORK steps.
+- HW.LOADER.SLIDE_ON_FORK_OUT_OF_POSITION, HW.LOADER.TAKE_RETURN_SLIDE.CANT_FIX_SLIDE_POSITION, HW.LOADER.TAKE_RETURN_SLIDE.FAILED_FIX_SLIDE_POSITION: 1) Follow UI error handling. 2) Remove slide if present. 3) Handle error changes. 4) Inspect and clean (fork alignment, reflectors). 5) Resolve manually, restart servers, reset loader state, clear Redis. 6) Verify by reproducing issue. Service By: Tier 1, Tier 3, Tier 4 Remotely
+
+SLIDE FALL ALARM:
+- HW.LOADER.RETURN_SLIDE.PRE_RETURN_SLIDE_NOT_ON_FORK: 1) Investigate error behavior, contact Tier 3 for real error code. 2) Manually resolve, clean loader state, clear Redis and restart. Escalation: Contact Tier 4 before dispatching. Service By: Tier 1, Tier 3 Remotely
+- Multiple slide falls (HW.LOADER.PUT_SLIDE.POST_PUT_SLIDE_NOT_ON_FORK): Investigate causes (incorrect placement, oily knives, objective lens). Tier 3 reviews images. Service By: Tier 1, Tier 3 Remotely
+
+COVERSLIP MISALIGNED/DROPPED:
+- HW.LOADER.COVERSLIP.COVERSLIP_NOT_TAKEN_AFTER_HOME: 1) Clean coverslip area, replace coverslip, store in dry area. If persists, send Tier 2 with vacuum/tube parts. Check active alignment (servo). 2) Tier 2 on-site: validate root cause. 3) Perform Vacuum Part Replacement, Needle Assembly Part Replacement. Escalation: Contact Tier 4 before main loader board replacement. Service By: Tier 1, Tier 2, Tier 3 Remotely
+- HW.LOADER.COVERSLIP.NO_OIL_DROPPED: Contact Tier 3 and Tier 4 for deeper investigation. Service By: Tier 1, Tier 3 Remotely
+
+COVERSLIP CASSETTE MISSING OR EMPTY:
+- HW.LOADER.COVERSLIP.COVERSLIP_CASSETTE_IS_MISSING: 1) Verify scanner and cartridge maintenance (clean, no obstructions on rail, full cassette, wait 10 sec). 2) Replace coverslip cartridge. 3) Run IR LEDs Part Replacement recipe without replacing, stop after Cassettes Burned IR LEDs step. 4) Proceed to IR Cameras Rail step. 5) If persists, Tier 3 visits site with spare parts. Service By: Tier 1, Tier 3 On-Site, Tier 4 Remotely
+- HW.LOADER.COVERSLIP.INSUFFICIENT_COVERSLIPS: 1) Verify maintenance. 2) Run Coverslip Applicator Part Replacement recipe without replacing, stop after Coverslip Pump Calibration. Service By: Tier 1
+
+COVERSLIP BROKEN:
+- HW.LOADER.COVERSLIP.UNDEFINED_AIR_PRESSURE: 1) Follow error handling UI. 2) Ensure proper scanner and cartridge maintenance. 3) Run Coverslip Applicator Part Replacement without replacing, stop after Pump Calibration. Escalation: Contact Tier 3 and Tier 4. Service By: Tier 1
+- HW.LOADER.COVERSLIP.COVERSLIP_NOT_TAKEN: Follow HW.LOADER.COVERSLIP.UNDEFINED_AIR_PRESSURE steps.
+
+INSUFFICIENT OIL:
+- HW.LOADER.COVERSLIP.INSUFFICIENT_OIL: 1) Follow error handling UI. 2) Check oil container is full, oil door closed, wait 10 sec. 3) Open door, lift oil container 2cm, replace, close, wait 10 sec. 4) Power cycle device. Escalation: If persists, Tier 3 visits with Tier 4 remotely. Service By: Tier 1
+
+SERVO IS STUCK:
+- HW.LOADER.UNLOCK_DOORS.SERVO_OPEN: 1) Follow error handling UI with Tier 3 remotely. 2) Run Wire Alignment Part Replacement without replacing (skip Main Camera EVT, stop after Slides Wire Assembly step). 3) Run Slides Wire Calibration test. Escalation: Contact Tier 4 before sending Tier 3 on site. Service By: Tier 1, Tier 3 Remotely
+
+OIL DOOR OPEN:
+- HW.LOADER.COVERSLIP.OIL_DOOR_OPEN: 1) Inspect oil door magnet and placement (not upside down). 2) Follow application UI steps. 3) On-site: verify all cables, hall effect sensor functioning. Service By: Tier 1, Tier 3 On-Site
+
+X100HT CASSETTE NOT DETECTED:
+- Specific cassette not detected: 1) Check cassette pin. 2) Reinsert cassette. 3) Switch to different cassette.
+- All cassettes not detected in same slot: 1) Run IR LEDs Part Replacement recipe without replacing. 2) Proceed to IR Cameras Rail step. 3) If persists, Tier 3 visits with IR board, IR camera board. Service By: Tier 1, Tier 3 Remotely, Tier 4 Remotely
+
+SLIDES NOT DETECTED AFTER CASSETTE INSERTION:
+- Door is open: Open and close door securely. Service By: Tier 1
+- Cassette not detected when door is closed: Identify as X100HT Cassette Not Detected. Service By: Tier 1
+- Unsupported slide types: Verify slides have opaque edge, no stickers extending beyond bounds. Service By: Tier 1
+
+LOADER OTHER ERRORS:
+- HW.LOADER.INIT.SLIDE_ON_FORK: Follow BLOCKING_ERROR steps.
+- HW.LOADER.HOME_ALL.SLIDE_ON_FORK: Follow BLOCKING_ERROR steps.
+- HW.LOADER.RETURN_SLIDE.PRE_RETURN_SLIDE_IN_SLOT: Follow UI error handling steps, contact Tier 3. Escalation: Contact Tier 4. Service By: Tier 1, Tier 3 Remotely
+- HW.LOADER.FORK.FAILED_CALIBRATING_REFLECTORS: 1) Verify fork alignment and reflectors, run Fork Alignment calibration. 2) Run Fork Part Replacement without replacing fork, run Fork Reflectors Calibration. Service By: Tier 1, Tier 3, Tier 4 Remotely
+- HW.LOADER.LOCK_DOORS.FRONT_DOOR_OPEN: Close door and retry. If persists, call Tier 4. Service By: Tier 1
+- HW.LOADER.TAKE_SLIDE.FAILED_TAKE_SLIDE: Verify user trained to clean cassette (IFU). No double slides, no slides stuck to ceiling of slot. Service By: Tier 1, Tier 3 Remotely
+- HW.LOADER.UNLOCK_DOORS.SLIDE_ON_FORK: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+- HW.LOADER.UNLOCK_DOORS.LOADER_NOT_HOME: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+- X Motor not moving: 1) Reseat tray board connections. 2) Reseat flex flat cable. 3) Reseat main board connections. 4) Engage Tier 3. Service By: Tier 3, Tier 4 Remotely
+
+=== PROCESSING UNIT OFFLINE IN RPORT ===
+- PU powered off: Power on, wait 10 min. If stays off, engage Tier 3. Tier 3 works with Tier 4. Service By: Tier 1
+- Failure in OS startup (Uboot): Connect screen to VGA port. If welcome screen appears, no Rport connection → next clue. If no screen, check for terminal prompt, power cycle 2-3 times. Check motherboard code display. Escalation: Schedule Tier 3 with PU parts. Service By: Tier 1, Tier 3, Tier 4 Remotely
+- Connection Blocked: Verify all Scopio mandatory URLs accessible on port 443. Escalation: Contact Tier 4. Service By: Tier 1
+
+=== APPLICATION NOT REACHABLE ===
+- Bad Gateway: 1) Wait 5 min (may be restarting). 2) Verify SSD connection: lsblk -f, check /mnt/hd1 mount, LABEL, FSTAB, UUID. 3) Contact Tier 3 to verify application running on PU, reboot PU and wait 10 min. Escalation: Contact Tier 4. Service By: Tier 1, Tier 3 Remotely
+- PU powered off: Power on, wait 10 min. If stays off, engage Tier 3. Service By: Tier 1
+- Network cable connection: 1) Verify cable in correct ETH port, check LEDs blinking. 2) If not blinking: replace cable or try different outlet. 3) If blinking but no connectivity: restart PU, wait 10 min. Service By: Tier 1
+- Network connectivity: 1) Confirm with IT team PU properly configured in network. 2) Ping test between workstation and PU. 3) Verify IP with "ifconfig eno1". 4) Check "cat /etc/netplan/01-networkmanager". Escalation: Contact Tier 3. Service By: Tier 1, Tier 2
+- Browser security warning: Renew certificate via service app's dedicated action (requires internet to *.scopiolabs.com). Service By: Tier 1
+- Version recently deployed / Error 500/502/504: Power on PU, wait 10 min. If stays off, engage Tier 3. Service By: Tier 1
+- System recently rebooted while scanner powered off: Ensure scanner switched on, restart PU. Escalation: Contact Tier 3. Service By: Tier 1
+- Network settings: Run "ifconfig eno1" to verify IP, check "cat /etc/netplan/01-networkmanager". Service By: Tier 1
+- Connection blocked: Verify all Scopio mandatory URLs accessible on port 443. Escalation: Contact Tier 4. Service By: Tier 1
+
+=== APPLICATION GENERAL ERRORS ===
+- SCANNER.FLOW.INIT.STATE_LOST: 1) Press "Verify" button if available, wait 10 sec. 2) Access support panel to resolve. Service By: Tier 1, Tier 3 Remotely
+- SCANNER.FLOW.UNEXPECTED_CRASH: Reboot PU and wait 10 min. Escalation: Contact Tier 4. Service By: Tier 1
+- SYSTEM.SERVICE_UNHEALTHY, SYSTEM.SERVICE_IS_DOWN: 1) Use support panel to identify which services are down. 2) Check logs for related errors. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
+
+=== SOFTWARE UPDATE FAILURES ===
+- Wrong version deployment error: Verify software version exists, check for typos. Escalation: Contact Tier 4. Service By: Tier 1
+- System clock not synced: Run "timedatectl", run "systemctl status chronyd", run "chronyc tracking" to check reference ID. If zero, not active → escalate to Tier 3. Refer to WI [DMS-26523]. Service By: Tier 1, Tier 2, Tier 3 Remotely
+- Slow network speed: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3, Tier 4 Remotely
+
+=== APPLICATION NOT REACHABLE AFTER DEPLOYMENT ===
+- Password updated after deployment: Distributor passwords may change between versions. Contact Tier 3 for updated password list. Service By: Tier 1
+- Error 500/502/504: Power on PU, wait 10 min. If stays off, engage Tier 3. Service By: Tier 1
+
+=== BARCODE ERRORS ===
+- SCANNER.BARCODE.LICENSE_ISSUE: Execute activation script via RPort per instructions in [DMS-31864]. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
+- Barcode cut off: 1) Check barcode calibration under scan setup settings (X100). Recalibrate if needed with Tier 3. 2) Verify preview camera calibrated, run preview camera calibration without replacing. Service By: Tier 1, Tier 3 Remotely
+- Preview camera out of focus: Follow Preview Image Out of Focus resolution. Service By: Tier 1, Tier 3 Remotely
+- Preview image is dark: Follow Backlight filter dirty or damaged resolution. Service By: Tier 1, Tier 3 Remotely
+
+=== NETWORK MODE - NOT ALL SYSTEMS DISPLAYED ===
+- Not all systems on same version: Check About screen for version consistency. Deploy latest to all systems. Escalation: Contact Tier 3. Service By: Tier 1
+- Not all systems clocks synced: Run "timedatectl", "systemctl status chronyd", "chronyc tracking". If Chrony not active → Tier 3. Refer to WI [DMS-26523]. Escalation: Contact Tier 4. Service By: Tier 1, Tier 2, Tier 3 Remotely
+
+=== LIS ISSUES ===
+- LIS Disconnected:
+  a) LIS Service not functioning: Reboot PU and wait 10 min. Escalation: Contact Tier 4. Service By: Tier 1
+  b) Wrong LIS settings: Ensure LIS connection settings are accurate and up to date. Escalation: Contact Tier 4. Service By: Tier 1
+- Repeated LIS Messages:
+  a) Hospital's LIS not receiving messages: Check outbound LIS status "connected". If not, follow LIS Disconnected steps. Service By: Tier 1
+  b) Timeout interval too short: Adjust timeout interval in LIS Settings to longer duration. Service By: Tier 1
+  c) Delayed resend period too short: Adjust delayed resend period in LIS Settings. Service By: Tier 1
+- Outbound data not received in LIS:
+  a) LIS settings: Check outbound LIS status, follow LIS Disconnected if not connected. Service By: Tier 1
+  b) Large file size: Adjust timeout interval to longer duration. Service By: Tier 1
+  c) Improper data format: Check LIS integration → Outbound tab → Reports Parameters settings. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
+
+=== APPLICATION SLOWNESS ===
+Before engaging Tier 3, collect:
+- Replace/disconnect network cable from PU to reset network interface.
+- Run network speed tests on affected workstations.
+- For Network Mode: Check IP configurations in IT Configuration tab, run speed tests between configured machines.
+
+=== EMPTY CASE GALLERY / ERRORS FETCHING CASES ===
+- Other networked devices unreachable: Fix connection of other devices, re-test via IT Configuration tab. Escalation: Contact Tier 4. Service By: Tier 3 Remotely
+- Database migration: Engage Tier 3, Tier 3 works with Tier 4. Service By: Tier 3 Remotely
+
+=== CLINICAL ISSUES ===
+Note: Refer to Application Specialist especially when no degradation and appears out-of-the-box. They determine if Technical Investigation is needed.
+
+- Incorrect PLT counts: If pink background, follow Repeated Pattern resolution steps.
+- Low WBC Count: May be due to clinical condition.
+  a) LCM turned off: Enable WBC Low Count Mode (LCM) in Scan Setup settings.
+  b) Current scan mode insufficient area: Adjust scan mode to increase scan area.
+- QC Failed:
+  a) Image quality degradation: Follow Scan Quality steps.
+  b) Previous QC results degradation: Identify if scan quality related, follow Scan Quality steps. Escalation: Contact Tier 4.
+  c) Missed/mis-detections of WBC: Engage Tier 3, Tier 3 works with Tier 4.
+- Wrong Scan Area:
+  a) Scan settings: (review settings)
+  b) Slide preparation: Verify slide properly prepared per guidelines.
+  c) Preview image related issue: Follow Preview Camera section steps.
+- Wrong Analysis Area:
+  a) Wrong Scan Area: Follow Wrong Scan Area steps.
+  b) In PBS+RBC, large analysis area due to slide preparation: May be shifted on specific slides. Escalation: Contact Tier 4.
+
+=== APPENDIX - IMAGE SHARPNESS ASSESSMENT ===
+Steps to validate:
+1. Enter three full-field scans, assess overall focus, choose one for detailed assessment.
+2. Click sun icon (upper right), set Image presets to 'Reset'.
+3. Navigate to 'WBC' tab.
+4. Check cells under section at 100X magnification.
+5. Grade each description (Faint/Moderate/Distinct/Absent) for at least 5 cells.
+   - Choose severe option if variability (e.g., 4 Distinct, 1 Moderate → mark Moderate).
+Sections to evaluate: Segmented Neutrophil, Monocyte.
+Segmented Neutrophil criteria: white dots in nuclei visible, connecting lines between segments clear, distinct dark dots in cytoplasm, distinction between light cytoplasm and dark nuclei, clear cell membrane outline.
+Monocyte criteria: clear vacuoles in cell membrane, nucleus folding visible, cytoplasm/nuclei distinction, cell membrane outline clarity.
+`;
+
+const SYSTEM_PROMPT = `You are the Scopio Support Bot, an expert AI assistant for troubleshooting the Scopio digital pathology system (X100 and X100HT models). You have comprehensive knowledge of the Scopio Troubleshooting Decision Tables Rev D.
+
+Your knowledge base:
+${GUIDE_KNOWLEDGE}
+
+RESPONSE GUIDELINES:
+1. Always identify the specific issue from the guide and provide structured, actionable guidance.
+2. List resolution steps clearly and in order (step 1, 2, 3...).
+3. Always specify which support tier (Tier 1, 2, 3, 4, or Clinical) should handle each step.
+4. If escalation is needed, clearly state when and to which tier.
+5. When mentioning error codes (like HW.MAIN_CAMERA.DISCONNECTED), use the exact code format.
+6. If you see a specific error code in the user's question, look it up directly.
+7. Keep responses focused and practical - users need to act quickly.
+8. If an issue could be multiple problems, present the most common/likely cause first.
+9. For issues requiring higher tiers (T3/T4), still provide the initial Tier 1 steps to take first.
+10. Always end with the appropriate escalation path if steps don't resolve the issue.
+
+FORMAT YOUR RESPONSES:
+- Use clear numbered steps for resolutions
+- Indicate service tier for steps when relevant
+- For escalation scenarios, clearly flag them
+- Be concise but complete - no unnecessary fluff
+
+You are friendly, professional, and focused on getting the user to a resolution as quickly as possible.`;
+
+let conversationHistory = [];
+let isLoading = false;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function quickAsk(text) {
+  document.getElementById('user-input').value = text;
+  sendMessage();
+}
+
+function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+
+  // Hide welcome screen
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  // Add user message
+  appendMessage('user', text);
+  input.value = '';
+  input.style.height = 'auto';
+
+  conversationHistory.push({ role: 'user', content: text });
+  callClaude();
+}
+
+function appendMessage(role, content, isHtml = false) {
+  const messages = document.getElementById('messages');
+  const msgEl = document.createElement('div');
+  msgEl.className = `msg ${role}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = role === 'bot' ? 'SC' : '👤';
+
+  const contentEl = document.createElement('div');
+  contentEl.className = 'msg-content';
+
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender';
+  sender.textContent = role === 'bot' ? 'SCOPIO BOT' : 'YOU';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+
+  if (isHtml) {
+    bubble.innerHTML = content;
+  } else {
+    bubble.textContent = content;
+  }
+
+  contentEl.appendChild(sender);
+  contentEl.appendChild(bubble);
+  msgEl.appendChild(avatar);
+  msgEl.appendChild(contentEl);
+  messages.appendChild(msgEl);
+  messages.scrollTop = messages.scrollHeight;
+
+  return bubble;
+}
+
+function showTyping() {
+  const messages = document.getElementById('messages');
+  const el = document.createElement('div');
+  el.className = 'msg bot';
+  el.id = 'typing-indicator';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = 'SC';
+
+  const contentEl = document.createElement('div');
+  contentEl.className = 'msg-content';
+
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender';
+  sender.textContent = 'SCOPIO BOT';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+
+  contentEl.appendChild(sender);
+  contentEl.appendChild(bubble);
+  el.appendChild(avatar);
+  el.appendChild(contentEl);
+  messages.appendChild(el);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function formatResponse(text) {
+  // Convert markdown-like formatting to HTML
+  let html = text;
+
+  // Bold
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  // Error codes / code-like items
+  html = html.replace(/\b(HW\.[A-Z_.]+|SCANNER\.[A-Z_.]+|SYSTEM\.[A-Z_.]+|NETWORK_ERROR|BLOCKING_ERROR)\b/g, '<span class="code-tag">$1</span>');
+
+  // Tier tags
+  html = html.replace(/\bTier 1\b/g, '<span class="tier-tag t1">⬤ T1</span>');
+  html = html.replace(/\bTier 2\b/g, '<span class="tier-tag t2">⬤ T2</span>');
+  html = html.replace(/\bTier 3\b/g, '<span class="tier-tag t3">⬤ T3</span>');
+  html = html.replace(/\bTier 4\b/g, '<span class="tier-tag t4">⬤ T4</span>');
+  html = html.replace(/\b(Clinical Application Specialist|Clinical Support|CAS)\b/g, '<span class="tier-tag tc">⬤ Clinical</span>');
+
+  // Headers (## and ###)
+  html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+
+  // Escalation blocks
+  html = html.replace(/(?:Escalation:|If the issue persists[^:]*:|⚠️ Escalation[^:]*:)(.*?)(?=\n\n|\n[A-Z]|$)/gis, (match, p1) => {
+    return `<div class="escalation-box"><strong>⚠ ESCALATION</strong>${match}</div>`;
+  });
+
+  // Numbered lists → styled steps
+  const lines = html.split('\n');
+  let inList = false;
+  let result = [];
+  let listItems = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const numMatch = line.match(/^(\d+)[.)]\s+(.+)/);
+    const bulletMatch = line.match(/^[-•*]\s+(.+)/);
+
+    if (numMatch) {
+      if (!inList) {
+        inList = 'ol';
+        listItems = [];
+      }
+      listItems.push(numMatch[2]);
+    } else if (bulletMatch) {
+      if (!inList) {
+        inList = 'ul';
+        listItems = [];
+      }
+      listItems.push(bulletMatch[1]);
+    } else {
+      if (inList && listItems.length > 0) {
+        if (inList === 'ol') {
+          result.push('<ol class="step-list">' + listItems.map(item => `<li>${item}</li>`).join('') + '</ol>');
+        } else {
+          result.push('<ul>' + listItems.map(item => `<li>${item}</li>`).join('') + '</ul>');
+        }
+        inList = false;
+        listItems = [];
+      }
+      if (line.trim()) {
+        result.push(`<p>${line}</p>`);
+      } else {
+        result.push('');
+      }
+    }
+  }
+
+  if (inList && listItems.length > 0) {
+    if (inList === 'ol') {
+      result.push('<ol class="step-list">' + listItems.map(item => `<li>${item}</li>`).join('') + '</ol>');
+    } else {
+      result.push('<ul>' + listItems.map(item => `<li>${item}</li>`).join('') + '</ul>');
+    }
+  }
+
+  return result.join('');
+}
+
+
+const MESSAGE_LIMIT = 20;
+let sessionCount = 0;
+
+function updateUsageBar() {
+  const pct = Math.min((sessionCount / MESSAGE_LIMIT) * 100, 100);
+  const fill = document.getElementById('usage-fill');
+  document.getElementById('usage-label').textContent = `${sessionCount} / ${MESSAGE_LIMIT} messages used`;
+  fill.style.width = pct + '%';
+  fill.className = 'usage-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
+}
+
+async function callClaude() {
+  if (sessionCount >= MESSAGE_LIMIT) {
+    document.getElementById('limit-banner').style.display = 'block';
+    document.getElementById('send-btn').disabled = true;
+    document.getElementById('user-input').disabled = true;
+    return;
+  }
+
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+  showTyping();
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: conversationHistory,
+        system: SYSTEM_PROMPT,
+        sessionCount: sessionCount + 1
+      })
+    });
+
+    const data = await response.json();
+    removeTyping();
+
+    if (data.error === 'limit_reached') {
+      document.getElementById('limit-banner').style.display = 'block';
+      document.getElementById('send-btn').disabled = true;
+      document.getElementById('user-input').disabled = true;
+      return;
+    }
+
+    if (data.content && data.content[0]) {
+      sessionCount++;
+      updateUsageBar();
+      const replyText = data.content[0].text;
+      conversationHistory.push({ role: 'assistant', content: replyText });
+      const formattedHtml = formatResponse(replyText);
+      appendMessage('bot', formattedHtml, true);
+    } else {
+      appendMessage('bot', 'Sorry, I encountered an error. Please try again.', false);
+      console.error(data);
+    }
+  } catch (err) {
+    removeTyping();
+    appendMessage('bot', 'Connection error. Please check your network and try again.', false);
+    console.error(err);
+  }
+
+  isLoading = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
+</script>
+</body>
+</html>
