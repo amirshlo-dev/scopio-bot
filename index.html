@@ -684,6 +684,28 @@
 </style>
 </head>
 <body>
+<script>
+  // Access token protection
+  const VALID_TOKEN = 'scopio2026';
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  if (token !== VALID_TOKEN) {
+    document.documentElement.innerHTML = `
+      <html><head><style>
+        body { margin:0; background:#0f0f0f; display:flex; align-items:center; justify-content:center; height:100vh; font-family:Inter,sans-serif; }
+        .box { text-align:center; color:#fff; }
+        .logo { font-size:28px; font-weight:700; margin-bottom:12px; color:#6b2fff; }
+        .msg { color:#aaa; font-size:15px; margin-top:8px; }
+      </style></head>
+      <body><div class="box">
+        <div class="logo">⬡ Scopio Labs</div>
+        <div style="font-size:48px;margin:20px 0">🔒</div>
+        <div style="font-size:20px;font-weight:600">Access Restricted</div>
+        <div class="msg">This tool is for internal Scopio use only.<br>Contact your administrator for access.</div>
+      </div></body></html>`;
+    throw new Error('Access denied');
+  }
+</script>
 
 <header>
   <div class="header-left">
